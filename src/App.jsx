@@ -1,341 +1,480 @@
-import React, { useState } from 'react';
-import { Github, Linkedin, Mail, ExternalLink, Briefcase, GraduationCap, Code, Mic, Heart, FileText, Award } from 'lucide-react';
+import { Github, Linkedin, Mail } from 'lucide-react';
 
-export default function Portfolio() {
-    const [activeSection, setActiveSection] = useState('about');
+/* ------------------------------------------------------------------ */
+/* Content                                                             */
+/* ------------------------------------------------------------------ */
 
-    const experience = [
-        {
-            role: "Consultant",
-            company: "BizInteligence Technologies",
-            period: "March 2024 - Present",
-            location: "India",
-            highlights: [
-                "Adapted opensource dating application built using Python and React Native",
-                "Migrated complex website from Drupal 7 to Drupal 10",
-                "Maintained web portal providing identity verification through PKCS"
-            ]
-        },
-        {
-            role: "Fullstack Engineer",
-            company: "Meta (via Alpha Net)",
-            period: "March 2023 - October 2023",
-            location: "Singapore",
-            highlights: [
-                "Maintained internal web tools ensuring compliance with privacy standards",
-                "Rebuilt three legacy functionalities using modern methods",
-                "Contributed 90 crucial changes to Facebook codebase"
-            ]
-        },
-        {
-            role: "Software Engineer",
-            company: "Credit Agricole CIB (via Adecco Personnel)",
-            period: "May 2022 - March 2023",
-            location: "Singapore",
-            highlights: [
-                "Maintained and rebuilt corporate website using NextJS and Drupal 9",
-                "Implemented automated deployment process using Jenkins",
-                "Applied data science methodologies to address data issues"
-            ]
-        },
-        {
-            role: "Lead Engineer",
-            company: "QBurst Technologies",
-            period: "August 2020 - May 2022",
-            location: "India",
-            highlights: [
-                "Led team of six developers",
-                "Developed web portal with progressive web app using ReactJS",
-                "Automated builds using Acquia pipelines and Jenkins"
-            ]
-        },
-        {
-            role: "Lead Engineer",
-            company: "Accenture",
-            period: "January 2018 - August 2020",
-            location: "Singapore"
-        },
-        {
-            role: "Software Engineer",
-            company: "Axelerant Technologies",
-            period: "July 2016 - September 2017",
-            location: "India"
-        }
-    ];
+const nav = [
+    { id: 'about', label: 'about' },
+    { id: 'work', label: 'work' },
+    { id: 'stack', label: 'stack' },
+    { id: 'projects', label: 'projects' },
+    { id: 'contact', label: 'contact' },
+];
 
-    const activities = [
-        { icon: <GraduationCap className="w-5 h-5" />, title: "M.Tech - Software Engineering", desc: "BITS Pilani" },
-        { icon: <Award className="w-5 h-5" />, title: "MicroMasters Statistics & Data Science", desc: "MIT" },
-        { icon: <Code className="w-5 h-5" />, title: "German B1", desc: "Goethe Institut" },
-        { icon: <Mic className="w-5 h-5" />, title: "Tech Conference Speaker", desc: "Opensource advocate" }
-    ];
+const experience = [
+    {
+        role: 'Senior Consultant',
+        org: 'BizIntelligence Technologies',
+        note: 'part-time, alongside M.Tech',
+        period: '03/2024 – present',
+        location: 'Remote',
+        current: true,
+        bullets: [
+            'Built a client-side SSL-certificate authentication system (FastAPI, React Native) that replaced password and OTP flows with cryptographic identity verification for a privacy-focused platform.',
+            'Migrated a legacy Drupal 7 application with 200+ modules to Drupal 10, writing custom scripts for complex data structures, business rules, and integrations.',
+            'Built an encrypted personal data vault with client-side encryption and granular, revocable permission-based sharing.',
+        ],
+    },
+    {
+        role: 'Full-Stack Engineer',
+        org: 'Meta',
+        note: 'contract via Alpha Net Solutions',
+        period: '03/2023 – 10/2023',
+        location: 'Singapore',
+        bullets: [
+            'Maintained and modernized privacy-compliance tooling used across Meta’s global privacy infrastructure (React, TypeScript, Hack), supporting GDPR and CCPA adherence.',
+            'Merged 90+ pull requests into Meta’s codebase: bug fixes, performance work, and migrations of legacy tools to current engineering standards.',
+            'Reworked report-generation systems for faster, more reliable compliance workflows.',
+        ],
+    },
+    {
+        role: 'Software Engineer',
+        org: 'Crédit Agricole CIB',
+        note: 'contract via Adecco',
+        period: '05/2022 – 03/2023',
+        location: 'Singapore',
+        bullets: [
+            'Rebuilt the corporate site (ca-cib.com) as headless Drupal 9 with a Next.js frontend, cutting page loads from 6 to 8 seconds down to 1 to 2 seconds.',
+            'Automated the deployment pipeline with Jenkins, taking deploys from 3 to 4 hours down to 30 to 45 minutes and downtime from an hour to 5 minutes.',
+            'Maintained the organization-wide intranet portal serving personalized content and data.',
+        ],
+    },
+    {
+        role: 'Lead Engineer',
+        org: 'QBurst Technologies',
+        note: '',
+        period: '08/2020 – 05/2022',
+        location: 'India',
+        bullets: [
+            'Led a multi-site Drupal 9 platform for the US National Institutes of Health on Acquia Cloud, meeting HIPAA requirements, with automated deployments via Acquia Pipelines.',
+            'Built a counter-terrorism portal for the Inter-Parliamentary Union: headless Drupal, a React progressive web app, and custom geopolitical maps in QGIS.',
+            'Set up CI/CD from scratch (Jenkins) across 10+ projects deploying to AWS and dedicated servers, and managed a team of 6.',
+        ],
+    },
+    {
+        role: 'Senior Analyst',
+        org: 'Accenture',
+        note: '',
+        period: '01/2018 – 08/2020',
+        location: 'Singapore',
+        bullets: [
+            'Led Drupal development for the Singapore Pools rebuild (Drupal 7 to 8), integrating Java backend services on a high-traffic betting platform.',
+            'Improved site performance 1.8x with Redis caching.',
+            'Consulted on-site for Telekom Malaysia, expanded into React and mobile app work after corporate training, and mentored junior developers.',
+        ],
+    },
+    {
+        role: 'Drupal Developer & Technical Lead',
+        org: 'Axelerant · Zyxware · Hello Infinity',
+        note: 'co-founder of Hello Infinity',
+        period: '06/2012 – 09/2017',
+        location: 'India',
+        bullets: [
+            'Delivered 15+ Drupal projects (e-commerce, multilingual) leading teams of up to 5. Co-founded Hello Infinity, owning technology decisions, infrastructure, and client relationships.',
+        ],
+    },
+];
 
-    const hobbies = ["3D Printing", "Malayalam Computing", "Open Source", "Language Learning"];
+const stack = [
+    { group: 'Languages', items: ['PHP', 'TypeScript', 'JavaScript', 'Python', 'SQL'] },
+    { group: 'Backend', items: ['Drupal 8/9/10', 'Symfony', 'FastAPI', 'REST', 'GraphQL'] },
+    { group: 'Frontend', items: ['React', 'Next.js', 'React Native', 'Tailwind CSS'] },
+    { group: 'ML & AI', items: ['PyTorch', 'Computer Vision', 'LLM APIs', 'Model Context Protocol'] },
+    { group: 'DevOps & Cloud', items: ['Docker', 'Jenkins', 'GitHub Actions', 'AWS', 'Acquia Cloud', 'NixOS'] },
+    { group: 'Data & Testing', items: ['PostgreSQL', 'MySQL', 'Apache Solr', 'PHPUnit', 'Playwright'] },
+];
 
-    const certifications = [
-        "Acquia Certified Drupal 8",
-        "AWS Certified Cloud Practitioner",
-        "DataCamp Certifications"
-    ];
+const projects = [
+    {
+        title: 'Road Quality Map',
+        meta: 'M.Tech dissertation · open source · 2025 to 2026',
+        href: 'https://roads.anishsheela.com/',
+        hrefLabel: 'roads.anishsheela.com',
+        body: 'An end-to-end pipeline that turns dashcam video into an interactive road-condition map: FFmpeg frame extraction, Tesseract OCR for GPS telemetry, a Swin Transformer classifier trained via active learning, and OpenStreetMap segment matching. Includes YOLOv8 pothole detection and smoothest-path routing over the quality-scored road graph.',
+    },
+    {
+        title: 'ApplyQuest',
+        meta: 'Full-stack platform · production · 2026',
+        href: 'https://github.com/anishanilkumar/applyquest',
+        hrefLabel: 'github.com/anishanilkumar/applyquest',
+        body: 'A job-search tracking platform (FastAPI, React, TypeScript, PostgreSQL) with analytics, a Firefox extension for one-click job capture, and scheduled email digests. Ships an MCP server that lets AI agents reconcile tracked applications against a Gmail inbox.',
+    },
+    {
+        title: 'Content Authenticity Toolkit',
+        meta: 'Media provenance · proof of concept · 2026',
+        href: 'https://github.com/anishanilkumar',
+        hrefLabel: 'github.com/anishanilkumar',
+        body: 'Register images and PDFs with PGP signatures, plus a Firefox extension that verifies signed media in the browser using perceptual hashing. Tamper detection that survives recompression.',
+    },
+];
+
+const education = [
+    { degree: 'M.Tech, Software Engineering', school: 'BITS Pilani (work-integrated)', period: '2024 – 2026', note: 'CGPA 8.22 / 10. Dissertation on computer-vision road-quality mapping.' },
+    { degree: 'MicroMasters, Statistics & Data Science', school: 'MITx, via edX', period: '2020 – 2022', note: 'Graduate-level probability, statistics, and machine-learning fundamentals.' },
+    { degree: 'B.Tech, Computer Science & Engineering', school: 'University of Kerala', period: '2008 – 2012', note: '' },
+];
+
+const certifications = ['Acquia Certified Developer', 'AWS Certified Cloud Practitioner', 'DataCamp Data Engineer Associate'];
+
+const languages = [
+    { name: 'German', level: 'B1, Goethe-Institut certified, studying toward B2' },
+    { name: 'English', level: 'C1, full professional proficiency' },
+    { name: 'Malayalam', level: 'Native' },
+    { name: 'Tamil & Hindi', level: 'Conversational' },
+];
+
+const community = [
+    'Co-founder of Drupal Kerala. I organize meetups and mentor new contributors.',
+    'Speaker at DrupalCon Vienna 2025, FOSSMeet 2025, and WordCamp Kerala 2024. Panelist at DrupalCamp Pune 2024.',
+    'Contributor to Drupal core and contributed modules, and to Malayalam language computing with Swathantra Malayalam Computing (localization for Mozilla and GNOME).',
+    'Maintainer of phpresellerclub, an open-source PHP API library in continuous use since 2012.',
+];
+
+/* ------------------------------------------------------------------ */
+/* Small building blocks                                               */
+/* ------------------------------------------------------------------ */
+
+function Eyebrow({ children }) {
+    return (
+        <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-[0.2em] text-route">
+            <span className="inline-block h-1.5 w-1.5 rotate-45 bg-route" />
+            {children}
+        </div>
+    );
+}
+
+function SectionHead({ label, title }) {
+    return (
+        <div className="mb-10">
+            <Eyebrow>{label}</Eyebrow>
+            <h2 className="mt-3 font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">{title}</h2>
+            <div className="mt-5 h-px w-full bg-hair" />
+        </div>
+    );
+}
+
+function Chip({ children }) {
+    return (
+        <span className="rounded-md border border-hair bg-panel px-2.5 py-1 font-mono text-[13px] text-ink">
+            {children}
+        </span>
+    );
+}
+
+/* ------------------------------------------------------------------ */
+/* Page                                                                */
+/* ------------------------------------------------------------------ */
+
+export default function App() {
+    const go = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
 
     return (
-        <div className="min-h-screen bg-gray-900 text-gray-100">
+        <div className="min-h-screen">
             {/* Header */}
-            <header className="fixed top-0 w-full bg-gray-900/95 backdrop-blur-sm border-b border-gray-800 z-50">
-                <nav className="container mx-auto px-6 py-4">
-                    <div className="flex items-center justify-between">
-                        <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
-                            Anish Anilkumar
-                        </h1>
-                        <div className="hidden md:flex gap-6">
-                            {['About', 'Experience', 'Skills', 'Activities', 'Contact'].map((item) => (
-                                <button
-                                    key={item}
-                                    onClick={() => {
-                                        const element = document.getElementById(item.toLowerCase());
-                                        element?.scrollIntoView({ behavior: 'smooth' });
-                                    }}
-                                    className="hover:text-blue-400 transition-colors text-gray-300"
-                                >
-                                    {item}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                </nav>
+            <header className="fixed inset-x-0 top-0 z-50 border-b border-hair bg-paper/85 backdrop-blur">
+                <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
+                    <button onClick={() => go('about')} className="font-display text-[15px] font-semibold tracking-tight text-ink">
+                        Anish Anilkumar
+                    </button>
+                    <nav className="hidden gap-7 sm:flex">
+                        {nav.map((n) => (
+                            <button
+                                key={n.id}
+                                onClick={() => go(n.id)}
+                                className="font-mono text-[13px] text-muted transition-colors hover:text-route"
+                            >
+                                {n.label}
+                            </button>
+                        ))}
+                    </nav>
+                </div>
             </header>
 
-            {/* Hero Section */}
-            <section id="about" className="pt-32 pb-20 px-6">
-                <div className="container mx-auto max-w-4xl text-center">
-                    <h2 className="text-5xl font-bold mb-4">
-                        Full-Stack Web Developer
-                    </h2>
-                    <p className="text-xl text-gray-400 mb-4">
-                        Consultant at BizInteligence Technologies | M.Tech Student at BITS Pilani
-                    </p>
-                    <div className="inline-block px-6 py-2 bg-green-500/20 border border-green-500 rounded-lg mb-6">
-                        <p className="text-green-400 font-semibold">🇪🇺 Available for Hire in Germany/EU</p>
+            <main className="mx-auto max-w-5xl px-6">
+                {/* Hero */}
+                <section id="about" className="pt-36 pb-24 sm:pt-44">
+                    <div className="rise" style={{ animationDelay: '0.05s' }}>
+                        <Eyebrow>Senior Full-Stack Engineer</Eyebrow>
                     </div>
-                    <p className="text-lg text-gray-300 mb-8 leading-relaxed max-w-3xl mx-auto">
-                        With 12 years of experience in software engineering, I specialize in complex web app development
-                        and building scalable infrastructure for millions of users. Former Meta engineer with expertise
-                        in Drupal, React, and modern web technologies. Currently seeking full-stack development opportunities
-                        in Germany and the EU.
+                    <h1
+                        className="rise mt-5 max-w-3xl font-display text-4xl font-bold leading-[1.05] tracking-tight text-ink sm:text-6xl"
+                        style={{ animationDelay: '0.12s' }}
+                    >
+                        I build web platforms that hold up at scale.
+                    </h1>
+                    <p
+                        className="rise mt-7 max-w-2xl text-lg leading-relaxed text-muted"
+                        style={{ animationDelay: '0.2s' }}
+                    >
+                        Thirteen years shipping software for Meta, Crédit Agricole CIB, Accenture, and the US
+                        National Institutes of Health. I work across the stack: deep PHP and Drupal, React and
+                        TypeScript on the frontend, and, lately, applied machine learning. Based in Berlin with a
+                        Goethe-certified B1 in German.
                     </p>
-                    <div className="flex gap-4 justify-center mb-8">
-                        <a href="https://github.com/anishsheela/" target="_blank" rel="noopener noreferrer"
-                           className="p-3 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors">
-                            <Github className="w-6 h-6" />
+
+                    <div className="rise mt-8 flex flex-wrap items-center gap-3" style={{ animationDelay: '0.28s' }}>
+                        <span className="inline-flex items-center gap-2 rounded-full border border-route/40 bg-route/10 px-4 py-1.5 font-mono text-[13px] text-route">
+                            <span className="inline-block h-2 w-2 rounded-full bg-route" />
+                            Available in Berlin, work authorization ready
+                        </span>
+                    </div>
+
+                    <div className="rise mt-8 flex flex-wrap items-center gap-3" style={{ animationDelay: '0.34s' }}>
+                        <a
+                            href="/Anish_Anilkumar_CV.pdf"
+                            download
+                            className="rounded-lg bg-ink px-5 py-2.5 font-display text-[15px] font-medium text-paper transition-colors hover:bg-navy"
+                        >
+                            Download CV
                         </a>
-                        <a href="https://www.linkedin.com/in/anishanil/" target="_blank" rel="noopener noreferrer"
-                           className="p-3 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors">
-                            <Linkedin className="w-6 h-6" />
-                        </a>
-                        <a href="mailto:aneesh.nl@gmail.com"
-                           className="p-3 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors">
-                            <Mail className="w-6 h-6" />
-                        </a>
-                    </div>
-                    <a href="/anish_a_resume.pdf" download
-                       className="inline-flex items-center gap-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 rounded-lg font-medium transition-colors">
-                        <FileText className="w-5 h-5" />
-                        Download Resume
-                    </a>
-                </div>
-            </section>
-
-            {/* Skills */}
-            <section id="skills" className="py-16 px-6 bg-gray-800/50">
-                <div className="container mx-auto max-w-5xl">
-                    <h3 className="text-3xl font-bold mb-8 text-center">Tech Stack</h3>
-                    <div className="grid md:grid-cols-3 gap-6 mb-8">
-                        <div>
-                            <h4 className="text-lg font-semibold text-blue-400 mb-3">Backend & CMS</h4>
-                            <div className="flex flex-wrap gap-2">
-                                {['Drupal', 'PHP', 'Python', 'MySQL'].map((skill) => (
-                                    <span key={skill} className="px-3 py-1.5 bg-gray-700 rounded-full text-sm font-medium">
-                    {skill}
-                  </span>
-                                ))}
-                            </div>
-                        </div>
-                        <div>
-                            <h4 className="text-lg font-semibold text-blue-400 mb-3">Frontend</h4>
-                            <div className="flex flex-wrap gap-2">
-                                {['ReactJS', 'React Native', 'TypeScript', 'JavaScript', 'CSS'].map((skill) => (
-                                    <span key={skill} className="px-3 py-1.5 bg-gray-700 rounded-full text-sm font-medium">
-                    {skill}
-                  </span>
-                                ))}
-                            </div>
-                        </div>
-                        <div>
-                            <h4 className="text-lg font-semibold text-blue-400 mb-3">DevOps & Tools</h4>
-                            <div className="flex flex-wrap gap-2">
-                                {['Docker', 'Git', 'Jenkins', 'AWS', 'Linux', 'Automation'].map((skill) => (
-                                    <span key={skill} className="px-3 py-1.5 bg-gray-700 rounded-full text-sm font-medium">
-                    {skill}
-                  </span>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <h4 className="text-lg font-semibold text-blue-400 mb-3 text-center">Emerging Tech</h4>
-                        <div className="flex flex-wrap gap-2 justify-center">
-                            {['Machine Learning', 'AI', 'PyTorch', 'K6', 'Fusion360'].map((skill) => (
-                                <span key={skill} className="px-3 py-1.5 bg-gray-700 rounded-full text-sm font-medium">
-                  {skill}
-                </span>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Experience */}
-            <section id="experience" className="py-20 px-6">
-                <div className="container mx-auto max-w-5xl">
-                    <h3 className="text-3xl font-bold mb-12 text-center">Professional Experience</h3>
-                    <div className="space-y-8">
-                        {experience.map((exp, idx) => (
-                            <div key={idx} className="border-l-2 border-blue-500 pl-6 pb-8">
-                                <div className="flex items-start gap-3">
-                                    <Briefcase className="w-5 h-5 text-blue-400 mt-1 flex-shrink-0" />
-                                    <div className="flex-1">
-                                        <h4 className="text-xl font-bold">{exp.role}</h4>
-                                        <p className="text-blue-400">{exp.company}</p>
-                                        <p className="text-sm text-gray-400 mb-3">{exp.period} • {exp.location}</p>
-                                        {exp.highlights && (
-                                            <ul className="space-y-2">
-                                                {exp.highlights.map((highlight, i) => (
-                                                    <li key={i} className="text-gray-300 text-sm flex items-start gap-2">
-                                                        <span className="text-blue-400 mt-1.5">•</span>
-                                                        <span>{highlight}</span>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                    <p className="text-center text-gray-400 mt-8">
-                        Previous roles at Zyxware Technologies & Hello Infinity Business Solutions (2012-2016)
-                    </p>
-                </div>
-            </section>
-
-            {/* Education & Activities */}
-            <section id="activities" className="py-20 px-6 bg-gray-800/30">
-                <div className="container mx-auto max-w-5xl">
-                    <h3 className="text-3xl font-bold mb-12 text-center">Education & Activities</h3>
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-                        {activities.map((activity, idx) => (
-                            <div key={idx} className="bg-gray-800 rounded-lg p-6 text-center hover:bg-gray-750 transition-colors">
-                                <div className="inline-flex p-3 bg-blue-500/20 rounded-lg mb-4">
-                                    {activity.icon}
-                                </div>
-                                <h4 className="font-bold mb-2">{activity.title}</h4>
-                                <p className="text-sm text-gray-400">{activity.desc}</p>
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className="bg-gray-800 rounded-lg p-8">
-                        <h4 className="text-xl font-bold mb-4 flex items-center gap-2">
-                            <Award className="w-5 h-5 text-blue-400" />
-                            Certifications
-                        </h4>
-                        <div className="grid md:grid-cols-3 gap-3">
-                            {certifications.map((cert) => (
-                                <div key={cert} className="px-4 py-2 bg-gray-700 rounded-lg text-sm text-center">
-                                    {cert}
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Hobbies */}
-            <section className="py-20 px-6">
-                <div className="container mx-auto max-w-4xl">
-                    <h3 className="text-3xl font-bold mb-8 text-center flex items-center justify-center gap-2">
-                        <Heart className="w-6 h-6 text-red-400" /> Interests & Hobbies
-                    </h3>
-                    <div className="flex flex-wrap gap-4 justify-center">
-                        {hobbies.map((hobby) => (
-                            <span key={hobby} className="px-6 py-3 bg-gray-800 rounded-lg text-lg hover:bg-gray-700 transition-colors">
-                {hobby}
-              </span>
-                        ))}
-                    </div>
-                    <div className="mt-8 text-center">
-                        <p className="text-gray-400 mb-3">Open Source Contributions</p>
-                        <div className="flex gap-4 justify-center">
-                            <a href="https://github.com/anishsheela/" target="_blank" rel="noopener noreferrer"
-                               className="text-blue-400 hover:text-blue-300 flex items-center gap-2">
-                                <Github className="w-4 h-4" />
-                                GitHub
-                            </a>
-                            <a href="https://www.drupal.org/u/anish.a" target="_blank" rel="noopener noreferrer"
-                               className="text-blue-400 hover:text-blue-300 flex items-center gap-2">
-                                <ExternalLink className="w-4 h-4" />
-                                Drupal.org
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Contact */}
-            <section id="contact" className="py-20 px-6 bg-gray-800/30">
-                <div className="container mx-auto max-w-2xl text-center">
-                    <div className="inline-block px-6 py-3 bg-green-500/20 border border-green-500 rounded-lg mb-6">
-                        <p className="text-green-400 font-bold text-lg">✅ Open to Opportunities in Germany/EU</p>
-                    </div>
-                    <h3 className="text-3xl font-bold mb-6">Let's Work Together</h3>
-                    <p className="text-gray-400 mb-4">
-                        I'm actively seeking full-stack web development roles in Germany and the European Union.
-                    </p>
-                    <p className="text-gray-300 mb-6">
-                        With German B1 proficiency, 12 years of international experience (Singapore, India),
-                        and expertise in modern web technologies, I'm ready to contribute to your team.
-                    </p>
-                    <div className="bg-gray-800 rounded-lg p-4 mb-8 max-w-lg mx-auto">
-                        <p className="text-sm text-gray-300">
-                            <span className="text-blue-400 font-semibold">✈️ Open to Relocation</span> •
-                            Germany Opportunity Card visa in process
-                        </p>
-                    </div>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <a
                             href="mailto:aneesh.nl@gmail.com"
-                            className="inline-block px-8 py-3 bg-blue-500 hover:bg-blue-600 rounded-lg font-medium transition-colors"
+                            className="rounded-lg border border-hair px-5 py-2.5 font-display text-[15px] font-medium text-ink transition-colors hover:border-ink"
                         >
-                            Email Me
+                            Get in touch
                         </a>
-                        <a
-                            href="https://www.linkedin.com/in/anishanil/"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-block px-8 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg font-medium transition-colors"
-                        >
-                            Connect on LinkedIn
-                        </a>
+                        <div className="ml-1 flex items-center gap-1">
+                            {[
+                                { icon: Github, href: 'https://github.com/anishanilkumar', label: 'GitHub' },
+                                { icon: Linkedin, href: 'https://www.linkedin.com/in/anishanil/', label: 'LinkedIn' },
+                                { icon: Mail, href: 'mailto:aneesh.nl@gmail.com', label: 'Email' },
+                            ].map(({ icon: Icon, href, label }) => (
+                                <a
+                                    key={label}
+                                    href={href}
+                                    aria-label={label}
+                                    target={href.startsWith('http') ? '_blank' : undefined}
+                                    rel="noopener noreferrer"
+                                    className="rounded-lg p-2.5 text-muted transition-colors hover:bg-panel hover:text-ink"
+                                >
+                                    <Icon className="h-5 w-5" />
+                                </a>
+                            ))}
+                        </div>
                     </div>
-                    <p className="text-gray-400 mt-6 text-sm">
-                        Kerala, India • +91 9620263587
-                    </p>
-                </div>
-            </section>
+                </section>
 
-            {/* Footer */}
-            <footer className="py-8 px-6 border-t border-gray-800 text-center text-gray-400">
-                <p>© 2025 Anish Anilkumar. Built with React & Tailwind CSS.</p>
+                {/* Work: the route line */}
+                <section id="work" className="border-t border-hair py-20">
+                    <SectionHead label="Work history" title="Where I have shipped" />
+                    <div className="relative">
+                        {/* the mapped route */}
+                        <div
+                            className="absolute left-[5px] top-2 bottom-2 w-px sm:left-[7px]"
+                            style={{ background: 'linear-gradient(to bottom, #2E7D5B, #1F3A5F 30%, #E0E2DD)' }}
+                            aria-hidden="true"
+                        />
+                        <ol className="space-y-12">
+                            {experience.map((job) => (
+                                <li key={job.role + job.org} className="relative pl-8 sm:pl-10">
+                                    <span
+                                        className={`absolute left-0 top-1.5 h-3 w-3 rounded-full border-2 ${
+                                            job.current ? 'border-route bg-route' : 'border-navy bg-paper'
+                                        } sm:h-[15px] sm:w-[15px]`}
+                                        aria-hidden="true"
+                                    />
+                                    <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
+                                        <h3 className="font-display text-xl font-semibold text-ink">
+                                            {job.role}
+                                            <span className="text-navy"> · {job.org}</span>
+                                        </h3>
+                                        <div className="shrink-0 font-mono text-[13px] text-muted">
+                                            {job.period} · {job.location}
+                                        </div>
+                                    </div>
+                                    {job.note && (
+                                        <div className="mt-0.5 font-mono text-xs text-muted">{job.note}</div>
+                                    )}
+                                    <ul className="mt-3 space-y-2">
+                                        {job.bullets.map((b, i) => (
+                                            <li key={i} className="flex gap-3 leading-relaxed text-muted">
+                                                <span className="mt-2.5 h-1 w-1 shrink-0 rounded-full bg-route" />
+                                                <span>{b}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </li>
+                            ))}
+                        </ol>
+                    </div>
+                </section>
+
+                {/* Stack */}
+                <section id="stack" className="border-t border-hair py-20">
+                    <SectionHead label="Toolkit" title="What I work with" />
+                    <div className="grid gap-x-10 gap-y-8 sm:grid-cols-2">
+                        {stack.map((s) => (
+                            <div key={s.group}>
+                                <h3 className="font-mono text-xs uppercase tracking-[0.16em] text-navy">{s.group}</h3>
+                                <div className="mt-3 flex flex-wrap gap-2">
+                                    {s.items.map((it) => (
+                                        <Chip key={it}>{it}</Chip>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
+                {/* Projects */}
+                <section id="projects" className="border-t border-hair py-20">
+                    <SectionHead label="Selected work" title="Things I have built" />
+                    <div className="space-y-5">
+                        {projects.map((p) => (
+                            <a
+                                key={p.title}
+                                href={p.href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="group block rounded-xl border border-hair bg-panel p-6 transition-colors hover:border-navy sm:p-7"
+                            >
+                                <div className="flex items-start justify-between gap-4">
+                                    <div>
+                                        <h3 className="font-display text-xl font-semibold text-ink">{p.title}</h3>
+                                        <div className="mt-1 font-mono text-xs text-muted">{p.meta}</div>
+                                    </div>
+                                    <span className="mt-1 font-mono text-lg text-muted transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-route">
+                                        ↗
+                                    </span>
+                                </div>
+                                <p className="mt-4 max-w-3xl leading-relaxed text-muted">{p.body}</p>
+                                <div className="mt-4 font-mono text-[13px] text-navy group-hover:text-route">
+                                    {p.hrefLabel}
+                                </div>
+                            </a>
+                        ))}
+                    </div>
+                </section>
+
+                {/* Education + Certs + Languages */}
+                <section className="border-t border-hair py-20">
+                    <SectionHead label="Background" title="Education & languages" />
+                    <div className="grid gap-x-10 gap-y-12 lg:grid-cols-3">
+                        <div className="lg:col-span-2">
+                            <h3 className="font-mono text-xs uppercase tracking-[0.16em] text-navy">Education</h3>
+                            <div className="mt-4 space-y-6">
+                                {education.map((e) => (
+                                    <div key={e.degree}>
+                                        <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
+                                            <h4 className="font-display text-lg font-semibold text-ink">{e.degree}</h4>
+                                            <span className="shrink-0 font-mono text-[13px] text-muted">{e.period}</span>
+                                        </div>
+                                        <div className="text-navy">{e.school}</div>
+                                        {e.note && <p className="mt-1 text-[15px] leading-relaxed text-muted">{e.note}</p>}
+                                    </div>
+                                ))}
+                            </div>
+
+                            <h3 className="mt-10 font-mono text-xs uppercase tracking-[0.16em] text-navy">
+                                Certifications
+                            </h3>
+                            <div className="mt-3 flex flex-wrap gap-2">
+                                {certifications.map((c) => (
+                                    <Chip key={c}>{c}</Chip>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 className="font-mono text-xs uppercase tracking-[0.16em] text-navy">Languages</h3>
+                            <dl className="mt-4 space-y-4">
+                                {languages.map((l) => (
+                                    <div key={l.name}>
+                                        <dt className="font-display font-semibold text-ink">{l.name}</dt>
+                                        <dd className="text-[15px] leading-relaxed text-muted">{l.level}</dd>
+                                    </div>
+                                ))}
+                            </dl>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Community */}
+                <section className="border-t border-hair py-20">
+                    <SectionHead label="Off the clock" title="Community & open source" />
+                    <ul className="grid gap-x-10 gap-y-5 sm:grid-cols-2">
+                        {community.map((c, i) => (
+                            <li key={i} className="flex gap-3 leading-relaxed text-muted">
+                                <span className="mt-2.5 h-1 w-1 shrink-0 rounded-full bg-route" />
+                                <span>{c}</span>
+                            </li>
+                        ))}
+                    </ul>
+                </section>
+
+                {/* Contact */}
+                <section id="contact" className="border-t border-hair py-20">
+                    <SectionHead label="Get in touch" title="Let us talk" />
+                    <div className="grid gap-10 lg:grid-cols-[1.2fr_1fr]">
+                        <div>
+                            <p className="max-w-xl text-lg leading-relaxed text-muted">
+                                I am looking for senior full-stack roles in Berlin and across the EU. Full German work
+                                authorization, no sponsorship needed, available to start immediately, and open to
+                                relocation.
+                            </p>
+                            <div className="mt-8 flex flex-wrap gap-3">
+                                <a
+                                    href="mailto:aneesh.nl@gmail.com"
+                                    className="rounded-lg bg-ink px-5 py-2.5 font-display text-[15px] font-medium text-paper transition-colors hover:bg-navy"
+                                >
+                                    Email me
+                                </a>
+                                <a
+                                    href="https://www.linkedin.com/in/anishanil/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="rounded-lg border border-hair px-5 py-2.5 font-display text-[15px] font-medium text-ink transition-colors hover:border-ink"
+                                >
+                                    Connect on LinkedIn
+                                </a>
+                            </div>
+                        </div>
+
+                        <dl className="space-y-4 font-mono text-[13px]">
+                            {[
+                                ['Email', 'aneesh.nl@gmail.com', 'mailto:aneesh.nl@gmail.com'],
+                                ['Phone', '+49 151 51484460', 'tel:+4915151484460'],
+                                ['Address', 'Seestraße 83, 13347 Berlin, Germany', null],
+                                ['GitHub', 'github.com/anishanilkumar', 'https://github.com/anishanilkumar'],
+                                ['Drupal', 'drupal.org/u/anish.a', 'https://www.drupal.org/u/anish.a'],
+                            ].map(([k, v, href]) => (
+                                <div key={k} className="flex flex-col gap-0.5 border-b border-hair pb-3 sm:flex-row sm:justify-between sm:gap-6">
+                                    <dt className="uppercase tracking-[0.14em] text-muted">{k}</dt>
+                                    {href ? (
+                                        <a
+                                            href={href}
+                                            target={href.startsWith('http') ? '_blank' : undefined}
+                                            rel="noopener noreferrer"
+                                            className="text-navy transition-colors hover:text-route sm:text-right"
+                                        >
+                                            {v}
+                                        </a>
+                                    ) : (
+                                        <dd className="text-ink sm:text-right">{v}</dd>
+                                    )}
+                                </div>
+                            ))}
+                        </dl>
+                    </div>
+                </section>
+            </main>
+
+            <footer className="border-t border-hair">
+                <div className="mx-auto flex max-w-5xl flex-col gap-2 px-6 py-8 font-mono text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
+                    <span>Anish Anilkumar, Berlin</span>
+                    <span>Built with React and Tailwind. No template.</span>
+                </div>
             </footer>
         </div>
     );
