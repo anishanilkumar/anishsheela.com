@@ -2,7 +2,7 @@
   "name": "anish-portfolio",
   "version": "1.0.0",
   "private": true,
-  "homepage": "https://www.anishsheela.com",
+  "homepage": "https://anishanilkumar.com",
   "dependencies": {
     "lucide-react": "^0.263.1",
     "react": "^18.2.0",

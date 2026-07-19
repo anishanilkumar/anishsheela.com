@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-Single-page personal portfolio site for Anish Anilkumar (www.anishsheela.com). Built with React 18 + Vite + Tailwind CSS, deployed to GitHub Pages.
+Single-page personal portfolio site for Anish Anilkumar (anishanilkumar.com). Built with React 18 + Vite + Tailwind CSS, deployed to GitHub Pages.
 
 ## Commands
 
