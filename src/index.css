@@ -1,9 +1,23 @@
+/* Self-hosted so no visitor IP is handed to a third-party font CDN. */
+@import '@fontsource/space-grotesk/400.css';
+@import '@fontsource/space-grotesk/500.css';
+@import '@fontsource/space-grotesk/600.css';
+@import '@fontsource/space-grotesk/700.css';
+@import '@fontsource/source-serif-4/400.css';
+@import '@fontsource/source-serif-4/600.css';
+@import '@fontsource/jetbrains-mono/400.css';
+@import '@fontsource/jetbrains-mono/500.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  html {
+  /* Smooth scrolling is switched on after mount, not here. With it set from
+     the start, the browser's initial jump to a /#fragment deep link gets
+     animated, then cancelled during hydration, leaving the visitor at the top
+     of the page. Instant on load, smooth for clicks. */
+  html.smooth-scroll {
     scroll-behavior: smooth;
   }
   body {
@@ -13,15 +27,40 @@
     background: #2E7D5B;
     color: #fff;
   }
+  /* Anchor jumps land clear of the fixed header, which is two rows on phones. */
+  section[id] {
+    scroll-margin-top: 1.75rem;
+  }
+  :focus-visible {
+    outline: 2px solid #2E7D5B;
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+}
+
+@layer utilities {
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html {
+  html.smooth-scroll {
     scroll-behavior: auto;
   }
   * {
     animation-duration: 0.001ms !important;
     transition-duration: 0.001ms !important;
+  }
+  /* .rise starts at opacity 0 and relies on the animation to reveal itself.
+     Make it visible outright rather than depending on a 0.001ms animation. */
+  .rise {
+    opacity: 1 !important;
+    animation: none !important;
   }
 }
 
