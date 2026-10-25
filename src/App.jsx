@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { Github, Linkedin, Mail } from 'lucide-react';
 
 /* ------------------------------------------------------------------ */
@@ -325,8 +325,8 @@ const community = [
 
 function Eyebrow({ children }) {
     return (
-        <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-[0.2em] text-route">
-            <span className="inline-block h-1.5 w-1.5 rotate-45 bg-route" aria-hidden="true" />
+        <div className="label flex items-center gap-2.5">
+            <span className="inline-block h-2 w-2 bg-arc-dim" aria-hidden="true" />
             {children}
         </div>
     );
@@ -336,26 +336,24 @@ function SectionHead({ label, title, id }) {
     return (
         <div className="mb-10">
             <Eyebrow>{label}</Eyebrow>
-            <h2 id={id} className="mt-3 font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+            <h2 id={id} className="mt-3 text-3xl font-semibold leading-[1.05] tracking-[-0.02em] text-ink sm:text-4xl">
                 {title}
             </h2>
-            <div className="mt-5 h-px w-full bg-hair" />
+            <div className="mt-5 h-[2px] w-full bg-engrave" />
         </div>
     );
 }
 
 function Chip({ children }) {
     return (
-        <span className="rounded-md border border-hair bg-panel px-2.5 py-1 font-mono text-[13px] text-ink">
+        <span className="rounded-[2px] border-rule border-engrave bg-panel px-2.5 py-1 font-mono text-[13px] text-ink">
             {children}
         </span>
     );
 }
 
 function GroupLabel({ children, className = '' }) {
-    return (
-        <h3 className={`font-mono text-xs uppercase tracking-[0.16em] text-navy ${className}`}>{children}</h3>
-    );
+    return <h3 className={`label ${className}`}>{children}</h3>;
 }
 
 /* One card in the projects section. The title link is stretched over the
@@ -367,18 +365,16 @@ function ProjectCard({ p, featured: isFeatured }) {
 
     return (
         <div
-            className={`group relative flex flex-col rounded-xl border border-hair bg-panel p-6 sm:p-7 ${
-                p.href ? 'transition-colors hover:border-navy' : ''
-            }`}
+            className={`instrument group flex flex-col p-6 sm:p-7 ${p.href ? 'hover:bg-panel-lit' : ''}`}
         >
             <div className="flex items-start justify-between gap-4">
                 <div>
-                    <h3 className="font-display text-xl font-semibold text-ink">
+                    <h3 className="text-xl font-semibold leading-[1.1] tracking-[-0.01em] text-ink transition-colors group-hover:text-arc">
                         {p.href ? (
                             <a
                                 href={p.href}
                                 {...linkProps}
-                                className="after:absolute after:inset-0 after:rounded-xl focus-visible:outline-none focus-visible:after:outline focus-visible:after:outline-2 focus-visible:after:outline-navy"
+                                className="after:absolute after:inset-0 focus-visible:outline-none focus-visible:after:outline focus-visible:after:outline-2 focus-visible:after:outline-arc"
                             >
                                 {p.title}
                             </a>
@@ -386,12 +382,12 @@ function ProjectCard({ p, featured: isFeatured }) {
                             p.title
                         )}
                     </h3>
-                    <div className="mt-1 font-mono text-xs text-muted">{p.meta}</div>
+                    <div className="mt-1.5 font-mono text-xs tracking-[0.08em] text-ink-dim">{p.meta}</div>
                 </div>
                 {p.href && (
                     <span
                         aria-hidden="true"
-                        className="mt-1 font-mono text-lg text-muted transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-route"
+                        className="mt-0.5 font-mono text-lg text-ink-dim transition-colors group-hover:text-arc"
                     >
                         ↗
                     </span>
@@ -407,15 +403,15 @@ function ProjectCard({ p, featured: isFeatured }) {
                         height="900"
                         loading="lazy"
                         decoding="async"
-                        className="aspect-[16/10] w-full rounded-lg border border-hair bg-paper object-cover object-top"
+                        className="aspect-[16/10] w-full border-rule border-engrave bg-ground object-cover object-top"
                     />
                 )}
                 <div>
-                    <p className={`leading-relaxed text-muted ${isFeatured && p.image ? '' : 'mt-4'}`}>{p.body}</p>
+                    <p className={`leading-relaxed text-ink-dim ${isFeatured && p.image ? '' : 'mt-4'}`}>{p.body}</p>
                     {p.why && (
-                        <div className="mt-5 border-t border-hair pt-4">
+                        <div className="mt-5 border-t-rule border-engrave pt-4">
                             <GroupLabel>Why it matters</GroupLabel>
-                            <p className="mt-2 leading-relaxed text-muted">{p.why}</p>
+                            <p className="mt-2 leading-relaxed text-ink-dim">{p.why}</p>
                         </div>
                     )}
                 </div>
@@ -423,13 +419,24 @@ function ProjectCard({ p, featured: isFeatured }) {
 
             {(p.hrefLabel || p.links) && (
                 <div className="mt-auto flex flex-wrap items-baseline gap-x-5 gap-y-1 pt-5 font-mono text-[13px]">
-                    {p.hrefLabel && <span className="text-navy group-hover:text-route">{p.hrefLabel}</span>}
+                    {/* Long repo URLs wrap after a slash, never mid-name. */}
+                    {p.hrefLabel && (
+                        <span className="text-arc">
+                            {p.hrefLabel.split('/').map((part, i) => (
+                                <Fragment key={i}>
+                                    {i > 0 && '/'}
+                                    {i > 0 && <wbr />}
+                                    {part}
+                                </Fragment>
+                            ))}
+                        </span>
+                    )}
                     {p.links?.map((l) => (
                         <a
                             key={l.href}
                             href={l.href}
                             {...linkProps}
-                            className="relative z-10 text-muted underline decoration-hair underline-offset-4 hover:text-route hover:decoration-route"
+                            className="relative z-10 text-ink-dim underline decoration-engrave decoration-2 underline-offset-4 hover:text-arc hover:decoration-arc"
                         >
                             {l.label} ↗
                         </a>
@@ -517,23 +524,23 @@ export default function App() {
     }, []);
 
     const navLink = (n, extra = '') =>
-        `font-mono text-[13px] transition-colors hover:text-route ${
-            active === n.id ? 'text-route' : 'text-muted'
+        `font-mono text-[13px] uppercase tracking-[0.08em] transition-colors hover:text-ink ${
+            active === n.id ? 'text-arc' : 'text-ink-dim'
         } ${extra}`;
 
     return (
         <div className="min-h-screen">
             <a
                 href="#main"
-                className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-ink focus:px-4 focus:py-2 focus:font-display focus:text-[15px] focus:text-paper"
+                className="btn btn-primary sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60]"
             >
                 Skip to content
             </a>
 
-            {/* Header */}
-            <header className="fixed inset-x-0 top-0 z-50 border-b border-hair bg-paper/85 backdrop-blur">
+            {/* Header. Solid ground, not translucent: no blur in this language. */}
+            <header className="fixed inset-x-0 top-0 z-50 border-b-rule border-engrave bg-ground">
                 <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
-                    <a href="#about" className="font-display text-[15px] font-semibold tracking-tight text-ink">
+                    <a href="#about" className="font-mono text-[13px] font-medium uppercase tracking-[0.3em] text-ink">
                         Anish Anilkumar
                     </a>
                     <nav aria-label="Sections" className="hidden gap-7 sm:flex">
@@ -552,7 +559,7 @@ export default function App() {
                 {/* Phones get a scrollable strip rather than no navigation at all. */}
                 <nav
                     aria-label="Sections"
-                    className="no-scrollbar flex gap-6 overflow-x-auto border-t border-hair px-6 py-2.5 sm:hidden"
+                    className="no-scrollbar flex gap-6 overflow-x-auto border-t-rule border-engrave px-6 py-2.5 sm:hidden"
                 >
                     {nav.map((n) => (
                         <a
@@ -576,13 +583,13 @@ export default function App() {
                                 <Eyebrow>Senior Full-Stack Engineer</Eyebrow>
                             </div>
                             <h1
-                                className="rise mt-5 font-display text-4xl font-bold leading-[1.05] tracking-tight text-ink sm:text-6xl"
+                                className="rise mt-5 text-4xl font-semibold leading-[0.98] tracking-[-0.03em] text-ink sm:text-6xl"
                                 style={{ animationDelay: '0.12s' }}
                             >
                                 I build web platforms that hold up at scale.
                             </h1>
                             <p
-                                className="rise mt-7 text-lg leading-relaxed text-muted"
+                                className="rise mt-7 text-lg leading-relaxed text-ink-dim"
                                 style={{ animationDelay: '0.2s' }}
                             >
                                 {yearsShipping} years shipping software for Meta, Crédit Agricole CIB, Accenture, and
@@ -595,8 +602,9 @@ export default function App() {
                                 className="rise mt-8 flex flex-wrap items-center gap-3"
                                 style={{ animationDelay: '0.28s' }}
                             >
-                                <span className="inline-flex items-center gap-2 rounded-full border border-route/40 bg-route/10 px-4 py-1.5 font-mono text-[13px] text-route">
-                                    <span className="inline-block h-2 w-2 rounded-full bg-route" aria-hidden="true" />
+                                {/* A status readout, not a pill: the dot carries the state. */}
+                                <span className="inline-flex items-center gap-2.5 border-l-4 border-arc bg-panel py-2 pl-3 pr-4 font-mono text-[13px] uppercase tracking-[0.08em] text-ink">
+                                    <span className="inline-block h-2 w-2 bg-arc" aria-hidden="true" />
                                     Available in Berlin, work authorization ready
                                 </span>
                             </div>
@@ -608,13 +616,13 @@ export default function App() {
                                 <a
                                     href="/Anish_Anilkumar_CV.pdf"
                                     download
-                                    className="rounded-lg bg-ink px-5 py-2.5 font-display text-[15px] font-medium text-paper transition-colors hover:bg-navy"
+                                    className="btn btn-primary"
                                 >
                                     Download CV
                                 </a>
                                 <a
                                     href="mailto:aneesh.nl@gmail.com"
-                                    className="rounded-lg border border-hair px-5 py-2.5 font-display text-[15px] font-medium text-ink transition-colors hover:border-ink"
+                                    className="btn"
                                 >
                                     Get in touch
                                 </a>
@@ -630,29 +638,29 @@ export default function App() {
                                             aria-label={label}
                                             target={href.startsWith('http') ? '_blank' : undefined}
                                             rel="noopener noreferrer"
-                                            className="rounded-lg p-2.5 text-muted transition-colors hover:bg-panel hover:text-ink"
+                                            className="inline-flex h-11 w-11 items-center justify-center rounded-[2px] text-ink-dim transition-colors hover:bg-engrave hover:text-arc"
                                         >
-                                            <Icon className="h-5 w-5" aria-hidden="true" />
+                                            <Icon className="h-5 w-5" strokeWidth={1.6} aria-hidden="true" />
                                         </a>
                                     ))}
                                 </div>
                             </div>
                         </div>
 
-                        <div className="rise hidden lg:block" style={{ animationDelay: '0.2s' }}>
+                        <div className="rise instrument hidden p-3 lg:block" style={{ animationDelay: '0.2s' }}>
                             <img
                                 src="/portrait.jpg"
                                 alt="Anish Anilkumar"
                                 width="880"
                                 height="1099"
-                                className="w-full rounded-2xl border border-hair object-cover"
+                                className="w-full object-cover"
                             />
                         </div>
                     </div>
                 </section>
 
                 {/* Projects */}
-                <section id="projects" className="border-t border-hair py-20">
+                <section id="projects" className="border-t-rule border-engrave py-20">
                     <SectionHead label="Selected work" title="Things I have built" />
                     <div className="space-y-14">
                         {projectGroups.map((g) => (
@@ -679,42 +687,44 @@ export default function App() {
                     </div>
                 </section>
 
-                {/* Work: the route line */}
-                <section id="work" className="border-t border-hair py-20">
+                {/* Work */}
+                <section id="work" className="border-t-rule border-engrave py-20">
                     <SectionHead label="Work history" title="Where I have shipped" />
                     <div className="relative">
-                        {/* the mapped route */}
+                        {/* An engraved rule with a tick per role: filled arc for the
+                            current one, an empty engraved square for the past. */}
                         <div
-                            className="absolute left-[5px] top-2 bottom-2 w-px sm:left-[7px]"
-                            style={{ background: 'linear-gradient(to bottom, #2E7D5B, #1F3A5F 30%, #E0E2DD)' }}
+                            className="absolute bottom-2 left-[6px] top-2 w-[2px] bg-engrave sm:left-[7px]"
                             aria-hidden="true"
                         />
                         <ol className="space-y-12">
                             {experience.map((job) => (
                                 <li key={job.role + job.org} className="relative pl-8 sm:pl-10">
                                     <span
-                                        className={`absolute left-0 top-1.5 h-3 w-3 rounded-full border-2 ${
-                                            job.current ? 'border-route bg-route' : 'border-navy bg-paper'
-                                        } sm:h-[15px] sm:w-[15px]`}
+                                        className={`absolute left-0 top-1.5 h-[14px] w-[14px] border-rule bg-ground sm:h-4 sm:w-4 ${
+                                            job.current ? 'border-arc' : 'border-arc-dim'
+                                        }`}
                                         aria-hidden="true"
-                                    />
+                                    >
+                                        {job.current && <span className="absolute inset-[2px] bg-arc" />}
+                                    </span>
                                     <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
-                                        <h3 className="font-display text-xl font-semibold text-ink">
+                                        <h3 className="text-xl font-semibold leading-[1.15] tracking-[-0.01em] text-ink">
                                             {job.role}
-                                            {job.org && <span className="text-navy"> · {job.org}</span>}
+                                            {job.org && <span className="text-arc-dim"> · {job.org}</span>}
                                         </h3>
-                                        <div className="shrink-0 font-mono text-[13px] text-muted">
+                                        <div className="shrink-0 font-mono text-[13px] tracking-[0.04em] text-ink-dim">
                                             {job.location ? `${job.period} · ${job.location}` : job.period}
                                         </div>
                                     </div>
                                     {job.note && (
-                                        <div className="mt-0.5 font-mono text-xs text-muted">{job.note}</div>
+                                        <div className="mt-0.5 font-mono text-xs tracking-[0.04em] text-ink-dim">{job.note}</div>
                                     )}
                                     <ul className="mt-3 space-y-2">
                                         {job.bullets.map((b, i) => (
-                                            <li key={i} className="flex gap-3 leading-relaxed text-muted">
+                                            <li key={i} className="flex gap-3 leading-relaxed text-ink-dim">
                                                 <span
-                                                    className="mt-2.5 h-1 w-1 shrink-0 rounded-full bg-route"
+                                                    className="mt-2.5 h-1 w-1 shrink-0 bg-arc-dim"
                                                     aria-hidden="true"
                                                 />
                                                 <span>{b}</span>
@@ -728,7 +738,7 @@ export default function App() {
                 </section>
 
                 {/* Stack */}
-                <section id="stack" className="border-t border-hair py-20">
+                <section id="stack" className="border-t-rule border-engrave py-20">
                     <SectionHead label="Toolkit" title="What I work with" />
                     <div className="grid gap-x-10 gap-y-8 sm:grid-cols-2">
                         {stack.map((s) => (
@@ -745,7 +755,7 @@ export default function App() {
                 </section>
 
                 {/* Education + Certs + Languages */}
-                <section id="background" className="border-t border-hair py-20">
+                <section id="background" className="border-t-rule border-engrave py-20">
                     <SectionHead label="Background" title="Education & languages" />
                     <div className="grid gap-x-10 gap-y-12 lg:grid-cols-3">
                         <div className="lg:col-span-2">
@@ -754,17 +764,17 @@ export default function App() {
                                 {education.map((e) => (
                                     <div key={e.degree}>
                                         <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
-                                            <h4 className="font-display text-lg font-semibold text-ink">{e.degree}</h4>
-                                            <span className="shrink-0 font-mono text-[13px] text-muted">{e.period}</span>
+                                            <h4 className="text-lg font-semibold text-ink">{e.degree}</h4>
+                                            <span className="shrink-0 font-mono text-[13px] text-ink-dim">{e.period}</span>
                                         </div>
-                                        <div className="text-navy">{e.school}</div>
-                                        {e.note && <p className="mt-1 text-[15px] leading-relaxed text-muted">{e.note}</p>}
+                                        <div className="text-arc-dim">{e.school}</div>
+                                        {e.note && <p className="mt-1 text-[15px] leading-relaxed text-ink-dim">{e.note}</p>}
                                         {e.href && (
                                             <a
                                                 href={e.href}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="mt-1 inline-block font-mono text-[13px] text-navy hover:text-route"
+                                                className="mt-1 inline-block font-mono text-[13px] text-arc hover:text-ink"
                                             >
                                                 {e.hrefLabel} ↗
                                             </a>
@@ -786,8 +796,8 @@ export default function App() {
                             <dl className="mt-4 space-y-4">
                                 {languages.map((l) => (
                                     <div key={l.name}>
-                                        <dt className="font-display font-semibold text-ink">{l.name}</dt>
-                                        <dd className="text-[15px] leading-relaxed text-muted">{l.level}</dd>
+                                        <dt className="font-semibold text-ink">{l.name}</dt>
+                                        <dd className="text-[15px] leading-relaxed text-ink-dim">{l.level}</dd>
                                     </div>
                                 ))}
                             </dl>
@@ -796,7 +806,7 @@ export default function App() {
                 </section>
 
                 {/* Community */}
-                <section id="community" className="border-t border-hair py-20">
+                <section id="community" className="border-t-rule border-engrave py-20">
                     <SectionHead label="Off the clock" title="Community & open source" />
                     <div className="grid gap-x-10 gap-y-10 lg:grid-cols-3">
                         {community.map((c) => (
@@ -812,17 +822,17 @@ export default function App() {
                                                     rel="noopener noreferrer"
                                                     className="group block"
                                                 >
-                                                    <span className="leading-relaxed text-muted transition-colors group-hover:text-ink">
+                                                    <span className="leading-relaxed text-ink-dim transition-colors group-hover:text-ink">
                                                         {it.text}
                                                     </span>
-                                                    <span className="mt-0.5 block font-mono text-xs text-navy transition-colors group-hover:text-route">
+                                                    <span className="mt-0.5 block font-mono text-xs text-arc transition-colors">
                                                         {it.meta} ↗
                                                     </span>
                                                 </a>
                                             ) : (
                                                 <div>
-                                                    <span className="leading-relaxed text-muted">{it.text}</span>
-                                                    <span className="mt-0.5 block font-mono text-xs text-muted">
+                                                    <span className="leading-relaxed text-ink-dim">{it.text}</span>
+                                                    <span className="mt-0.5 block font-mono text-xs text-ink-dim">
                                                         {it.meta}
                                                     </span>
                                                 </div>
@@ -836,11 +846,11 @@ export default function App() {
                 </section>
 
                 {/* Contact */}
-                <section id="contact" className="border-t border-hair py-20">
+                <section id="contact" className="border-t-rule border-engrave py-20">
                     <SectionHead label="Get in touch" title="Let's talk" />
                     <div className="grid gap-10 lg:grid-cols-[1.2fr_1fr]">
                         <div>
-                            <p className="max-w-xl text-lg leading-relaxed text-muted">
+                            <p className="max-w-xl text-lg leading-relaxed text-ink-dim">
                                 I am looking for senior full-stack roles in Berlin and across the EU. Full German work
                                 authorization, no sponsorship needed, available to start immediately, and open to
                                 relocation.
@@ -848,7 +858,7 @@ export default function App() {
                             <div className="mt-8 flex flex-wrap gap-3">
                                 <a
                                     href="mailto:aneesh.nl@gmail.com"
-                                    className="rounded-lg bg-ink px-5 py-2.5 font-display text-[15px] font-medium text-paper transition-colors hover:bg-navy"
+                                    className="btn btn-primary"
                                 >
                                     Email me
                                 </a>
@@ -856,7 +866,7 @@ export default function App() {
                                     href="https://www.linkedin.com/in/anishanil/"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="rounded-lg border border-hair px-5 py-2.5 font-display text-[15px] font-medium text-ink transition-colors hover:border-ink"
+                                    className="btn"
                                 >
                                     Connect on LinkedIn
                                 </a>
@@ -873,16 +883,16 @@ export default function App() {
                             ].map(([k, v, href]) => (
                                 <div
                                     key={k}
-                                    className="flex flex-col gap-0.5 border-b border-hair pb-3 sm:flex-row sm:justify-between sm:gap-6"
+                                    className="flex flex-col gap-0.5 border-b-rule border-engrave pb-3 sm:flex-row sm:justify-between sm:gap-6"
                                 >
-                                    <dt className="uppercase tracking-[0.14em] text-muted">{k}</dt>
+                                    <dt className="uppercase tracking-[0.14em] text-ink-dim">{k}</dt>
                                     <dd className="sm:text-right">
                                         {href ? (
                                             <a
                                                 href={href}
                                                 target={href.startsWith('http') ? '_blank' : undefined}
                                                 rel="noopener noreferrer"
-                                                className="text-navy transition-colors hover:text-route"
+                                                className="text-arc transition-colors hover:text-ink"
                                             >
                                                 {v}
                                             </a>
@@ -897,8 +907,8 @@ export default function App() {
                 </section>
             </main>
 
-            <footer className="border-t border-hair">
-                <div className="mx-auto flex max-w-5xl flex-col gap-2 px-6 py-8 font-mono text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
+            <footer className="border-t-rule border-engrave">
+                <div className="mx-auto flex max-w-5xl flex-col gap-2 px-6 py-8 font-mono text-xs text-ink-dim sm:flex-row sm:items-center sm:justify-between">
                     <span>Anish Anilkumar, Berlin</span>
                     <span>Built with React and Tailwind. No template.</span>
                 </div>

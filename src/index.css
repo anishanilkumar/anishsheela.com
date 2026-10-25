@@ -1,18 +1,57 @@
-/* Self-hosted so no visitor IP is handed to a third-party font CDN. */
-@import '@fontsource/space-grotesk/400.css';
-@import '@fontsource/space-grotesk/500.css';
-@import '@fontsource/space-grotesk/600.css';
-@import '@fontsource/space-grotesk/700.css';
-@import '@fontsource/source-serif-4/400.css';
-@import '@fontsource/source-serif-4/600.css';
-@import '@fontsource/jetbrains-mono/400.css';
-@import '@fontsource/jetbrains-mono/500.css';
+/* anishanilkumar.com, in the Jarvis panel's language: a machined instrument,
+   not a glowing screen. Palette, faces, 2px rules and engraved corner brackets
+   come from jarvis/frontend/src/styles/tokens.css.
+
+   Departures, with reasons:
+   - No offline token swap. This is a static, prerendered page with no live
+     data, so there is no state for it to describe.
+   - Manjari is not bundled. The page has no Malayalam text (see
+     public/fonts/README.md).
+   - Tailwind stays. Its theme maps onto the tokens below, so components use
+     bg-panel / text-arc and never a raw hex. */
+
+@font-face {
+  font-family: "Archivo";
+  src: url("/fonts/archivo-var.woff2") format("woff2-variations");
+  font-weight: 400 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Plex Mono";
+  src: url("/fonts/plexmono-400.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Plex Mono";
+  src: url("/fonts/plexmono-500.woff2") format("woff2");
+  font-weight: 500;
+  font-display: swap;
+}
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --ground: #0a0e14;   /* never #000: pure black reads as a dead panel */
+    --panel: #111823;
+    --panel-lit: #16202e;
+    --engrave: #2a3543;  /* rules, brackets, borders */
+    --ink: #e8f1f8;
+    --ink-dim: #7c8fa3;
+    --arc: #3dd6f5;      /* links, primary action, focus, "current" */
+    --arc-dim: #1d7f96;  /* labels and section headings at rest */
+    --gold: #e8a33d;
+    --slate: #55647a;
+
+    --rule: 2px;         /* never below 2px: hairlines smear on the dark ground */
+    --bracket: 1rem;
+    --ease: cubic-bezier(0.2, 0.7, 0.3, 1);
+    color-scheme: dark;
+  }
+
   /* Smooth scrolling is switched on after mount, not here. With it set from
      the start, the browser's initial jump to a /#fragment deep link gets
      animated, then cancelled during hydration, leaving the visitor at the top
@@ -21,21 +60,79 @@
     scroll-behavior: smooth;
   }
   body {
-    @apply bg-paper text-ink font-serif antialiased;
+    @apply bg-ground font-data text-ink antialiased;
+    line-height: 1.45;
+    /* Dates and counts must not twitch between rows. */
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
+  }
+  h1, h2, h3, h4 {
+    text-wrap: balance;
   }
   ::selection {
-    background: #2E7D5B;
-    color: #fff;
+    background: var(--arc);
+    color: var(--ground);
   }
   /* Anchor jumps land clear of the fixed header, which is two rows on phones. */
   section[id] {
     scroll-margin-top: 1.75rem;
   }
   :focus-visible {
-    outline: 2px solid #2E7D5B;
-    outline-offset: 3px;
-    border-radius: 2px;
+    outline: var(--rule) solid var(--arc);
+    outline-offset: 2px;
   }
+}
+
+@layer components {
+  /* A raised face with two engraved corner brackets rather than a bordered,
+     rounded, shadowed card. */
+  .instrument {
+    position: relative;
+    background: var(--panel);
+    transition: background 220ms var(--ease);
+  }
+  .instrument::before,
+  .instrument::after {
+    content: "";
+    position: absolute;
+    width: var(--bracket);
+    height: var(--bracket);
+    border: var(--rule) solid var(--engrave);
+    pointer-events: none;
+  }
+  .instrument::before { top: 0; left: 0; border-right: none; border-bottom: none; }
+  .instrument::after { bottom: 0; right: 0; border-left: none; border-top: none; }
+
+  /* Uppercase mono label in arc at rest: section eyebrows and group headings. */
+  .label {
+    font-family: theme("fontFamily.mono");
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--arc-dim);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 48px;
+    padding: 0 1.25rem;
+    border: var(--rule) solid var(--engrave);
+    border-radius: 2px;
+    color: var(--ink);
+    font-family: theme("fontFamily.mono");
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: background 160ms var(--ease), color 160ms var(--ease), border-color 160ms var(--ease);
+  }
+  .btn:hover { background: var(--engrave); }
+  .btn-primary { background: var(--arc); border-color: var(--arc); color: var(--ground); }
+  .btn-primary:hover { background: var(--ink); border-color: var(--ink); }
 }
 
 @layer utilities {
@@ -64,11 +161,11 @@
   }
 }
 
-/* Hero entrance: one orchestrated, staggered fade-up on load. */
+/* Hero entrance: content arriving, once, on load. Nothing moves after. */
 @keyframes rise {
   from {
     opacity: 0;
-    transform: translateY(14px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -77,5 +174,5 @@
 }
 .rise {
   opacity: 0;
-  animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: rise 520ms var(--ease) forwards;
 }

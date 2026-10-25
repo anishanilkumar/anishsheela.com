@@ -1,4 +1,7 @@
 /** @type {import('tailwindcss').Config} */
+// Colours point at the CSS variables in src/index.css, which follow the
+// instrument house style (jarvis/frontend/src/styles/tokens.css). Edit the
+// values there, not here.
 export default {
     content: [
         "./index.html",
@@ -7,18 +10,23 @@ export default {
     theme: {
         extend: {
             colors: {
-                paper: "#F5F6F4",
-                panel: "#FFFFFF",
-                ink: "#151C24",
-                navy: "#1F3A5F",
-                route: "#2E7D5B",
-                muted: "#586170",
-                hair: "#E0E2DD",
+                ground: "var(--ground)",
+                panel: "var(--panel)",
+                "panel-lit": "var(--panel-lit)",
+                engrave: "var(--engrave)",
+                ink: "var(--ink)",
+                "ink-dim": "var(--ink-dim)",
+                arc: "var(--arc)",
+                "arc-dim": "var(--arc-dim)",
+                gold: "var(--gold)",
+                slate: "var(--slate)",
             },
             fontFamily: {
-                display: ['"Space Grotesk"', "ui-sans-serif", "system-ui", "sans-serif"],
-                serif: ['"Source Serif 4"', "Georgia", "serif"],
-                mono: ['"JetBrains Mono"', "ui-monospace", "SFMono-Regular", "monospace"],
+                data: ['Archivo', "system-ui", "sans-serif"],
+                mono: ['"Plex Mono"', "ui-monospace", '"Roboto Mono"', "monospace"],
+            },
+            borderWidth: {
+                rule: "2px",
             },
         },
     },
