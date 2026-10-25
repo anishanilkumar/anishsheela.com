@@ -316,8 +316,17 @@ const community = [
                 href: 'https://drupalkerala.org/',
             },
             {
-                text: 'Responsible for the cooking at The Migrant Canteen, and an amateur baker the rest of the time.',
+                text: 'Responsible for the cooking at The Migrant Canteen.',
                 meta: 'The Migrant Canteen',
+            },
+        ],
+    },
+    {
+        group: 'Baking',
+        items: [
+            {
+                text: 'Amateur baker.',
+                meta: 'off the clock',
             },
         ],
     },
