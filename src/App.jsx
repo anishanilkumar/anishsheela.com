@@ -134,7 +134,7 @@ const projectGroups = [
         cards: [],
     },
     {
-        title: 'Products and AI tooling',
+        title: 'Products',
         featured: [
         {
             title: 'ApplyQuest',
@@ -149,18 +149,39 @@ const projectGroups = [
         },        ],
         cards: [
         {
+            title: 'Content Authenticity Toolkit',
+            meta: 'Media provenance · proof of concept · 2026',
+            href: 'https://github.com/anishanilkumar/content-authenticity-poc',
+            hrefLabel: 'github.com/anishanilkumar/content-authenticity-poc',
+            links: [{ label: 'Firefox add-on', href: 'https://github.com/anishanilkumar/sign_extension' }],
+            body: 'A way to prove that a photo or document is the one you published and has not been altered since. You sign your images and PDFs, and a browser add-on checks the signature as you browse. It still recognizes a picture that was resized or re-saved along the way, which is what normally breaks this kind of check.',
+        },
+        ],
+    },
+    {
+        title: 'The kitchen, run through Claude',
+        featured: [],
+        cards: [
+        {
             title: 'Grocy MCP',
             meta: 'Open source · AI assistant tooling · 2026',
             href: 'https://github.com/anishanilkumar/grocy-mcp',
             hrefLabel: 'github.com/anishanilkumar/grocy-mcp',
             body: 'Connects an AI assistant to the open source software that tracks what is in your kitchen, so instead of tapping through an inventory app you just ask: what is going off this week, what can I cook with it, add coconut milk to the list. The careful part is what it refuses to do. If a product name could mean two things, it stops and asks rather than quietly moving the wrong item.',
-        },        {
-            title: 'Content Authenticity Toolkit',
-            meta: 'Media provenance · proof of concept · 2026',
-            href: 'https://github.com/anishanilkumar',
-            hrefLabel: 'github.com/anishanilkumar',
-            body: 'A way to prove that a photo or document is the one you published and has not been altered since. You sign your images and PDFs, and a browser add-on checks the signature as you browse. It still recognizes a picture that was resized or re-saved along the way, which is what normally breaks this kind of check.',
-        },        ],
+        },
+        {
+            title: 'Recipie',
+            meta: 'Offline-first PWA · MCP · 2026',
+            href: 'https://github.com/anishanilkumar/recipie',
+            hrefLabel: 'github.com/anishanilkumar/recipie',
+            body: 'A household recipe book that checks the pantry before you start. Each recipe gets a lid: green when everything is in, yellow when one or two minor things are missing, red when the dish cannot happen tonight. It knows coconut oil can stand in for ghee, works offline at the stove, and lets Claude read and save recipes.',
+        },
+        {
+            title: 'Foodlog',
+            meta: 'Photo-first PWA · MCP · private · 2026',
+            body: 'Logging a meal takes a photo and a few seconds. Claude works out later what was on the plate, how much, and the nutrition, reading a kitchen scale in the frame when there is one. Each half of an entry has exactly one writer, the phone or Claude, so syncing never has to merge anything.',
+        },
+        ],
     },
     {
         title: 'Self-hosted, for home and community',
@@ -172,7 +193,7 @@ const projectGroups = [
             href: 'https://abfahrt.anishsheela.com/',
             hrefLabel: 'abfahrt.anishsheela.com',
             links: [{ label: 'source', href: 'https://github.com/anishanilkumar/jarvis' }],
-            body: 'A Raspberry Pi that runs the household: media, automatic Mac backups, monitoring, remote access. The whole machine is described in one set of text files, so if the memory card dies I write a fresh one and get the identical server back. A cheap tablet on the wall shows the day from it, weather, tram departures, the shopping list, and answers to "hey jarvis" without a word said in the house leaving the Pi. Its departures panel is public as Abfahrt: give it a Berlin address and see the trams and buses you can still catch nearby.',
+            body: 'A Raspberry Pi that runs the household: media, automatic Mac backups, monitoring, remote access. The whole machine is described in one set of text files, so if the memory card dies I write a fresh one and get the identical server back. A cheap tablet on the wall shows the day from it: weather, whether you need an umbrella, tram departures, dinner, the shopping list. It answers to "hey jarvis" entirely on the Pi, with no account and nothing said in the house sent anywhere. The rule is that it never blanks and never lies: stale data looks stale. Its departures panel is public as Abfahrt: give it a Berlin address and see the trams and buses you can still catch nearby.',
         },
         {
             title: 'Human Nutrition Facts',
@@ -200,13 +221,6 @@ const projectGroups = [
             href: 'https://github.com/anishanilkumar/wg_whatsapp',
             hrefLabel: 'github.com/anishanilkumar/wg_whatsapp',
             body: 'Announces the day\'s cleaning duties to our shared flat\'s WhatsApp group every morning. Deliberately notify only: no tracking, no reminders, no calling anyone out.',
-        },
-        {
-            title: 'Qatar Airways alert monitor',
-            meta: 'Python · GitHub Actions · 2026',
-            href: 'https://github.com/anishanilkumar/qatar-alert-monitor',
-            hrefLabel: 'github.com/anishanilkumar/qatar-alert-monitor',
-            body: 'Watches the airline\'s travel alerts while Qatari airspace was closed and sends each new one to Telegram within minutes, reading the same data feed the website uses rather than scraping it.',
         },
         {
             title: 'Walk or run for the bus?',
@@ -650,7 +664,7 @@ export default function App() {
                                     ))}
                                     {g.cards.length > 0 && (
                                         <div
-                                            className={`grid gap-5 sm:grid-cols-2 ${
+                                            className={`grid gap-5 ${g.cards.length > 1 ? 'sm:grid-cols-2' : ''} ${
                                                 g.cards.length % 3 === 0 ? 'lg:grid-cols-3' : g.cards.length === 4 ? 'lg:grid-cols-4' : ''
                                             }`}
                                         >
