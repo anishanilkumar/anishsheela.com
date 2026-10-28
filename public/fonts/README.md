@@ -1,6 +1,6 @@
 # Bundled fonts
 
-Copied from `~/jarvis/frontend/public/fonts/`, the canonical set for the
+Copied from `~/projects/home/jarvis/frontend/public/fonts/`, the canonical set for the
 instrument house style. Self-hosted rather than fetched from a CDN so no visitor
 IP is handed to a third party. Only the Latin subsets are here (~65 KB total).
 
