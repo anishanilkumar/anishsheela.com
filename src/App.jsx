@@ -511,7 +511,7 @@ const canteen = {
     image: '/community/canteen.jpg',
     alt: 'A dozen people around a long table with pots of food, smiling at the camera.',
     lead: 'A free monthly event in Berlin for migrant workers and students: counselling on CVs, job search and immigration law, and a warm meal for everyone who comes.',
-    body: 'It is run by a group of volunteers. I lead the cooking and prep: I decide the menu, organise the shopping, and together we cook a warm meal for around 60 people. I joined in April 2026, helping with the prep. I am also on the team building its website.',
+    body: 'It is run by a group of volunteers. I help with the cooking and prep: planning the menu, the shopping, and cooking a warm meal together for around 60 people. I have been volunteering since April 2026, and I am also on the team building its website.',
     stats: [
         { value: '~60', label: 'people fed at each event' },
         { value: '04/2026', label: 'volunteering since' },
