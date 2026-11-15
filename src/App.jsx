@@ -222,6 +222,70 @@ const projectGroups = [
         ],
     },
     {
+        title: 'Apps I use every day',
+        items: [
+            {
+                id: 'friday',
+                title: 'Friday',
+                tagline: 'One Android app for the whole household.',
+                meta: 'Android · Kotlin and Compose · private · 2026',
+                features: ['One sign-in', 'Works offline', 'Barcode scanning', 'Bluetooth label printing', 'Push notifications'],
+                body: [
+                    'Every service I run at home used to be its own web page or its own app. Friday is the one app in front of all of them: recipes, the food log, the kitchen inventory, freelance hours, the job search numbers, courses, and one-time codes behind a fingerprint.',
+                    'You sign in once. The identity server decides which sections an account sees, so the family gets the kitchen and I get everything. Each section is a native front end to a server that already exists, keeps its own copy offline and syncs when it can.',
+                    'It scans barcodes on the phone, prints inventory labels over Bluetooth, and gets its notifications from the servers over a message broker. It is written in Kotlin and Compose with very few dependencies: no navigation library, no dependency injection, plain SQLite.',
+                ],
+            },
+            {
+                id: 'pace',
+                title: 'Pace',
+                tagline: 'Freelance hours against a monthly target.',
+                meta: 'React · FastAPI · Playwright · live demo · 2026',
+                href: 'https://pace-demo.anishsheela.com/',
+                hrefLabel: 'pace-demo.anishsheela.com',
+                links: [{ label: 'source', href: 'https://github.com/anishanilkumar/pace' }],
+                features: ['Income goal to daily hours', 'Reads the time tracker', 'Meetings vs productive work', 'Nudges on Android'],
+                body: [
+                    'Set a monthly income goal and Pace works out what each day needs. It reads the hours tracked in Time Doctor through the day and tells you where you stand: today\'s quota, how far ahead of or behind the plan you are, and how much of the time went to meetings rather than productive work.',
+                    'The time tracker\'s API stopped answering, so Pace signs in with a headless browser, the way a person would, and reads the report. Hours are flexible, so it judges whole days, never the clock, and nudges the phone when the month starts slipping.',
+                    'The demo is a made-up freelancer whose day fills up as yours goes on.',
+                ],
+            },
+            {
+                id: 'study',
+                title: 'Study',
+                tagline: 'Self-hosted courses with quizzes, drills and streaks.',
+                meta: 'FastAPI · offline · open source · live demo · 2026',
+                href: 'https://study-demo.anishsheela.com/',
+                hrefLabel: 'study-demo.anishsheela.com',
+                links: [{ label: 'source', href: 'https://github.com/anishanilkumar/study' }],
+                stats: [
+                    { value: '3', label: 'courses' },
+                    { value: '55', label: 'lessons' },
+                    { value: '47', label: 'timed drills' },
+                ],
+                body: [
+                    'Courses I wrote for myself, each with a day-by-day plan, lessons, a check after every lesson, quiz rounds and timed drills: Python and FastAPI for PHP developers, MQTT, and the ESP32.',
+                    'Questions you miss come back the next day, quizzes lean towards what you get wrong, and the drills are realistic snippets with planted bugs to review against the clock. XP, ranks and streaks are computed from what you have actually done, so unticking a lesson takes the points back.',
+                    'It is one small FastAPI app, which makes the FastAPI course a working example of what it teaches. The demo keeps your progress in your own browser.',
+                ],
+            },
+            {
+                id: 'otp-inbox',
+                title: 'OTP inbox',
+                tagline: 'One-time codes from a SIM that lives in another phone.',
+                meta: 'Python standard library · SQLite · live demo · 2026',
+                href: 'https://otp-demo.anishsheela.com/',
+                hrefLabel: 'otp-demo.anishsheela.com',
+                links: [{ label: 'source', href: 'https://github.com/anishanilkumar/sms-otp-inbox' }],
+                body: [
+                    'My SIM lives in another phone, so the codes my bank and accounts send end up there. That phone forwards only the one-time codes, and a page behind a login shows the latest one in large type, ready to copy. It also says whether the phone is still online.',
+                    'A message only counts as a code when it also says so, with a word such as OTP or verification, so a balance or an order number is never shown as one. Messages are deleted after 7 days. The demo shows made-up messages and accepts nothing.',
+                ],
+            },
+        ],
+    },
+    {
         title: 'The kitchen, run through Claude',
         items: [
             {
@@ -240,22 +304,25 @@ const projectGroups = [
                 id: 'recipie',
                 title: 'Recipie',
                 tagline: 'A recipe book that checks the pantry first.',
-                meta: 'Offline-first PWA · MCP · 2026',
-                href: 'https://github.com/anishanilkumar/recipie',
-                hrefLabel: 'github.com/anishanilkumar/recipie',
+                meta: 'Offline-first PWA · MCP · live demo · 2026',
+                href: 'https://recipes-demo.anishsheela.com/',
+                hrefLabel: 'recipes-demo.anishsheela.com',
+                links: [{ label: 'source', href: 'https://github.com/anishanilkumar/recipie' }],
                 body: [
                     'A household recipe book that checks the pantry before you start. Each recipe gets a lid: green when everything is in, yellow when one or two minor things are missing, red when the dish cannot happen tonight.',
-                    'It knows coconut oil can stand in for ghee, works offline at the stove, and lets Claude read and save recipes.',
+                    'It knows coconut oil can stand in for ghee, works offline at the stove, and lets Claude read and save recipes. The demo has a made-up pantry and eight Kerala dishes.',
                 ],
             },
             {
                 id: 'foodlog',
                 title: 'Foodlog',
                 tagline: 'Log a meal with one photo.',
-                meta: 'Photo-first PWA · MCP · private · 2026',
+                meta: 'Photo-first PWA · MCP · live demo · code not public · 2026',
+                href: 'https://food-demo.anishsheela.com/',
+                hrefLabel: 'food-demo.anishsheela.com',
                 body: [
                     'Logging a meal takes a photo and a few seconds. Claude works out later what was on the plate, how much, and the nutrition, reading a kitchen scale in the frame when there is one.',
-                    'Each half of an entry has exactly one writer, the phone or Claude, so syncing never has to merge anything.',
+                    'Each half of an entry has exactly one writer, the phone or Claude, so syncing never has to merge anything. The demo has three days of made-up meals, and anything you log stays in your browser.',
                 ],
             },
         ],
@@ -356,7 +423,7 @@ const certifications = ['Acquia Certified Developer', 'Google AI for JavaScript 
 
 const languages = [
     { name: 'German', cefr: 3, level: 'B1, Goethe-Institut certified, studying toward B2' },
-    { name: 'English', cefr: 5, level: 'C1 (IELTS), full professional proficiency' },
+    { name: 'English', cefr: 6, level: 'C1 (IELTS), full professional proficiency' },
     { name: 'Malayalam', cefr: 6, level: 'Native' },
     { name: 'Tamil & Hindi', level: 'Conversational' },
 ];
@@ -1057,7 +1124,8 @@ export default function App() {
                                     <div key={l.name}>
                                         <dt className="flex items-center justify-between gap-4 font-semibold text-ink">
                                             {l.name}
-                                            {/* CEFR as six index ticks, A1 to C2, lit up to the level. */}
+                                            {/* Proficiency as six index ticks. English is shown full by
+                                                choice: C1 certified, used professionally every day. */}
                                             {l.cefr && (
                                                 <span className="flex gap-1" aria-hidden="true">
                                                     {[1, 2, 3, 4, 5, 6].map((n) => (
