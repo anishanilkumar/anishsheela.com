@@ -509,7 +509,7 @@ const canteen = {
     label: 'Volunteering · Berlin',
     // Used with the consent of the people in it.
     image: '/community/canteen.jpg',
-    alt: 'A dozen people around a long table with pots of food, smiling at the camera.',
+    alt: 'Volunteers around a long table with pots of food. Anish, in a violet t-shirt, smiles at the camera; the others have their faces blurred.',
     lead: 'A free monthly event in Berlin for migrant workers and students: counselling on CVs, job search and immigration law, and a warm meal for everyone who comes.',
     body: 'It is run by a group of volunteers. I help with the cooking and prep: planning the menu, the shopping, and cooking a warm meal together for around 60 people. I have been volunteering since April 2026, and I am also on the team building its website.',
     stats: [
