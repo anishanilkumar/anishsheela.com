@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import { Github, Linkedin, Mail } from 'lucide-react';
 
 /* ------------------------------------------------------------------ */
@@ -13,10 +13,23 @@ const nav = [
     { id: 'projects', label: 'projects' },
     { id: 'work', label: 'work' },
     { id: 'stack', label: 'stack' },
+    { id: 'education', label: 'education' },
     { id: 'community', label: 'community' },
     { id: 'contact', label: 'contact' },
 ];
 
+/* The numbers a casual visitor should leave with. Each one is stated again,
+   with its context, further down the page. */
+const headlineStats = [
+    { value: String(yearsShipping), label: 'years shipping software' },
+    { value: '90+', label: 'pull requests merged at Meta' },
+    { value: '1.8x', label: 'faster platform at Accenture' },
+    { value: '6', label: 'conference talks and panels' },
+];
+
+/* Each role has a scanning layer that is always visible (headline, stats) and
+   the full bullets behind a "Details" toggle. The headline has to stand on its
+   own: most visitors never open the toggle. */
 const experience = [
     {
         role: 'Senior Consultant',
@@ -25,6 +38,8 @@ const experience = [
         period: '03/2024 – present',
         location: 'Remote',
         current: true,
+        headline: 'Certificate-based authentication and a client-side encrypted data vault, built with FastAPI and React Native.',
+        stats: [{ value: '200+', label: 'modules in a Drupal 7 to 10 migration' }],
         bullets: [
             'Architected and operate a client-side certificate authentication service end to end (FastAPI backend, React Native client), replacing password and OTP flows with cryptographic identity verification. I direct Claude Code through structured specs for the bulk of the implementation and review every generated change before merge.',
             'Built an encrypted personal data vault where encryption and key handling run entirely client-side, so plaintext never reaches the server.',
@@ -45,6 +60,8 @@ const experience = [
         note: 'contract via Alpha Net Solutions',
         period: '03/2023 – 10/2023',
         location: 'Singapore',
+        headline: 'Privacy-compliance tooling for GDPR and CCPA, in React, TypeScript and Hack.',
+        stats: [{ value: '90+', label: 'pull requests merged' }],
         bullets: [
             'Shipped and modernized privacy-compliance tooling used across Meta’s global privacy infrastructure (React, TypeScript, Hack), supporting GDPR and CCPA adherence.',
             'Owned features end to end with product and compliance stakeholders, merging 90+ pull requests across bug fixes, performance work, and migrations of legacy tools to current engineering standards.',
@@ -57,6 +74,11 @@ const experience = [
         note: 'contract via Adecco',
         period: '05/2022 – 03/2023',
         location: 'Singapore',
+        headline: 'Rebuilt ca-cib.com as headless Drupal 9 with Next.js, and automated its deploys.',
+        stats: [
+            { value: '1 to 2 s', label: 'page loads, down from 6 to 8 s' },
+            { value: '30 to 45 min', label: 'deploys, down from 3 to 4 h' },
+        ],
         bullets: [
             'Rebuilt the corporate site (ca-cib.com) as headless Drupal 9 with a Next.js frontend, cutting page loads from 6 to 8 seconds down to 1 to 2 seconds.',
             'Automated the deployment pipeline with Jenkins, taking deploys from 3 to 4 hours down to 30 to 45 minutes and downtime from an hour to 5 minutes.',
@@ -69,6 +91,11 @@ const experience = [
         note: '',
         period: '08/2020 – 05/2022',
         location: 'India',
+        headline: 'Led a HIPAA-compliant Drupal platform for the US National Institutes of Health.',
+        stats: [
+            { value: '6', label: 'engineers managed and mentored' },
+            { value: '10+', label: 'projects on shared CI/CD' },
+        ],
         bullets: [
             'Led a multi-site Drupal 9 platform for the US National Institutes of Health on Acquia Cloud, meeting HIPAA requirements, owning architecture, content modeling, and automated deployments through Acquia Pipelines.',
             'Built a counter-terrorism portal for the Inter-Parliamentary Union: headless Drupal, a React progressive web app, and custom geopolitical maps in QGIS.',
@@ -81,6 +108,8 @@ const experience = [
         note: '',
         period: '01/2018 – 08/2020',
         location: 'Singapore',
+        headline: 'Led the Singapore Pools rebuild, a high-traffic, tightly regulated betting platform.',
+        stats: [{ value: '1.8x', label: 'performance, from a Redis caching layer' }],
         bullets: [
             'Led the Singapore Pools platform rebuild (Drupal 7 to 8) and its integrations with surrounding services and backend infrastructure, modernizing a high-traffic, tightly regulated betting platform and removing expensive third-party licensing costs.',
             'Designed the Redis caching layer that cut expensive repeated queries across those integrations and improved performance 1.8x, with invalidation built so the platform never served stale availability data.',
@@ -93,11 +122,20 @@ const experience = [
         note: 'co-founder of Hello Infinity',
         period: '06/2012 – 09/2017',
         location: 'India',
+        headline: 'E-commerce and multilingual Drupal builds, and a company of my own.',
+        stats: [
+            { value: '15+', label: 'Drupal projects delivered' },
+            { value: '5', label: 'largest team led' },
+        ],
         bullets: [
             'Delivered 15+ Drupal projects (e-commerce, multilingual) leading teams of up to 5. Co-founded Hello Infinity, owning technology decisions, infrastructure, and client relationships.',
         ],
     },
 ];
+
+/* The tools in daily use, shown bright in the stack table. The rest are dim:
+   real experience, but not what a visitor should take away first. */
+const coreStack = ['PHP', 'TypeScript', 'Drupal 7 to 10', 'React', 'Python', 'FastAPI'];
 
 const stack = [
     { group: 'Languages', items: ['PHP', 'TypeScript', 'JavaScript', 'Python', 'SQL'] },
@@ -108,134 +146,202 @@ const stack = [
     { group: 'Data & Testing', items: ['PostgreSQL', 'MySQL', 'Redis', 'Apache Solr', 'PHPUnit', 'Behat', 'Jest', 'Playwright'] },
 ];
 
-/* Projects are grouped by theme rather than size. A group's first cards can
-   be featured (full width, image, "why it matters"); the rest sit in a grid.
-   Each card's href is the primary link (the whole card), and `links` adds
-   secondary ones such as the source code. */
+/* Projects are grouped by theme rather than size, and shown in a selector: the
+   index lists every project as a title and a one-line tagline (the scanning
+   layer), and the selected one opens in a panel with the full story. The
+   first project is selected on load, so it should be the strongest.
+   `href` is the primary link, `links` adds secondary ones such as the source.
+   `body` is a list of short paragraphs. */
 const projectGroups = [
     {
         title: 'Applied machine learning',
-        featured: [
-        {
-            title: 'Road Quality Map',
-            meta: 'M.Tech dissertation · open source · 2025 to 2026',
-            href: 'https://roads.anishsheela.com/',
-            hrefLabel: 'roads.anishsheela.com',
-            links: [
-                { label: 'annotate.anishsheela.com', href: 'https://annotate.anishsheela.com/' },
-                { label: 'source', href: 'https://github.com/anishanilkumar/potholes' },
-            ],
-            image: '/projects/roads.jpg',
-            alt: 'An interactive map with road segments colored by surface quality.',
-            body: 'A dashcam records the road on an ordinary drive. This turns that footage into a map of how good or bad the surface actually is, stretch by stretch, across 808 road segments, and can then route you along the smoothest way rather than the shortest. It works out where the camera was from the timestamp burned into the video, and learns to recognize a rough surface or a pothole from the picture itself. The labels came from a game I built for it: you rate a dashcam frame against a five-point rubric, and only score when someone else independently gives the same answer. Fifty-three people played and produced 3,216 agreed images. Fixing that data and the class design, rather than the model, took validation accuracy from 53% to 79.6%.',
-            why: 'Road condition surveys are expensive, so they happen rarely and cover very little. Anyone with a dashcam is already carrying the sensor, which matters most on the roads official surveys never reach. A smoother route is also an accessibility question for anyone on two wheels, in a wheelchair, or carrying a patient. And rewarding agreement instead of volume made accuracy the thing worth chasing.',
-        },
+        items: [
+            {
+                id: 'roads',
+                title: 'Road Quality Map',
+                tagline: 'Dashcam footage in, a map of road surface quality out.',
+                meta: 'M.Tech dissertation · open source · 2025 to 2026',
+                href: 'https://roads.anishsheela.com/',
+                hrefLabel: 'roads.anishsheela.com',
+                links: [
+                    { label: 'annotate.anishsheela.com', href: 'https://annotate.anishsheela.com/' },
+                    { label: 'source', href: 'https://github.com/anishanilkumar/potholes' },
+                ],
+                image: '/projects/roads.jpg',
+                alt: 'An interactive map with road segments colored by surface quality.',
+                stats: [
+                    { value: '808', label: 'road segments rated' },
+                    { value: '53', label: 'people labelled the data' },
+                    { value: '3,216', label: 'agreed images' },
+                    { value: '79.6%', label: 'accuracy, up from 53%' },
+                ],
+                body: [
+                    'A dashcam records the road on an ordinary drive. This turns that footage into a map of how good or bad the surface actually is, stretch by stretch, and can then route you along the smoothest way rather than the shortest.',
+                    'It works out where the camera was from the timestamp burned into the video, and learns to recognize a rough surface or a pothole from the picture itself.',
+                    'The labels came from a game I built for it: you rate a dashcam frame against a five-point rubric, and only score when someone else independently gives the same answer. Fixing that data and the class design, rather than the model, took validation accuracy from 53% to 79.6%.',
+                ],
+                why: 'Road condition surveys are expensive, so they happen rarely and cover very little. Anyone with a dashcam is already carrying the sensor, which matters most on the roads official surveys never reach. A smoother route is also an accessibility question for anyone on two wheels, in a wheelchair, or carrying a patient.',
+            },
         ],
-        cards: [],
     },
     {
         title: 'Products',
-        featured: [
-        {
-            title: 'ApplyQuest',
-            meta: 'Full-stack platform · live demo · 2026',
-            href: 'https://applyquest-demo.anishsheela.com',
-            hrefLabel: 'applyquest-demo.anishsheela.com',
-            links: [{ label: 'source', href: 'https://github.com/anishanilkumar/applyquest' }],
-            image: '/projects/applyquest.jpg',
-            alt: 'A diagram tracing job applications through interview stages to their outcomes.',
-            body: 'A job hunt is hundreds of applications spread over months, with long silences and very little feedback. ApplyQuest keeps all of it in one place: where each application stands, who you have spoken to, what needs a follow up this week. It borrows from games, awarding points and streaks for the effort you control, because the outcome mostly is not. A browser add-on saves a posting in one click, a weekly email tells you where things stand, and an MCP server lets an AI assistant check your tracked applications against your actual Gmail inbox. The demo is loaded with a sample job hunt, so you can click straight in.',
-            why: 'Job hunting is demoralizing precisely because effort and results come apart. Rewarding the applications you sent, rather than the replies you did not get, is what keeps people going through the part that actually decides whether they get hired.',
-        },        ],
-        cards: [
-        {
-            title: 'Content Authenticity Toolkit',
-            meta: 'Media provenance · proof of concept · 2026',
-            href: 'https://github.com/anishanilkumar/content-authenticity-poc',
-            hrefLabel: 'github.com/anishanilkumar/content-authenticity-poc',
-            links: [{ label: 'Firefox add-on', href: 'https://github.com/anishanilkumar/sign_extension' }],
-            body: 'A way to prove that a photo or document is the one you published and has not been altered since. You sign your images and PDFs, and a browser add-on checks the signature as you browse. It still recognizes a picture that was resized or re-saved along the way, which is what normally breaks this kind of check.',
-        },
+        items: [
+            {
+                id: 'applyquest',
+                title: 'ApplyQuest',
+                tagline: 'A job search tracker that rewards the effort you control.',
+                meta: 'Full-stack platform · live demo · 2026',
+                href: 'https://applyquest-demo.anishsheela.com',
+                hrefLabel: 'applyquest-demo.anishsheela.com',
+                links: [{ label: 'source', href: 'https://github.com/anishanilkumar/applyquest' }],
+                image: '/projects/applyquest.jpg',
+                alt: 'A diagram tracing job applications through interview stages to their outcomes.',
+                features: ['Points and streaks', 'One-click browser add-on', 'Weekly email', 'MCP server'],
+                body: [
+                    'A job hunt is hundreds of applications spread over months, with long silences and very little feedback. ApplyQuest keeps all of it in one place: where each application stands, who you have spoken to, what needs a follow up this week.',
+                    'It borrows from games, awarding points and streaks for the effort you control, because the outcome mostly is not. A browser add-on saves a posting in one click, a weekly email tells you where things stand, and an MCP server lets an AI assistant check your tracked applications against your actual Gmail inbox.',
+                    'The demo is loaded with a sample job hunt, so you can click straight in.',
+                ],
+                why: 'Job hunting is demoralizing precisely because effort and results come apart. Rewarding the applications you sent, rather than the replies you did not get, is what keeps people going through the part that actually decides whether they get hired.',
+            },
+            {
+                id: 'authenticity',
+                title: 'Content Authenticity Toolkit',
+                tagline: 'Prove a photo or PDF is the one you published.',
+                meta: 'Media provenance · proof of concept · 2026',
+                href: 'https://github.com/anishanilkumar/content-authenticity-poc',
+                hrefLabel: 'github.com/anishanilkumar/content-authenticity-poc',
+                links: [{ label: 'Firefox add-on', href: 'https://github.com/anishanilkumar/sign_extension' }],
+                features: ['Signs images and PDFs', 'Browser add-on verifies', 'Survives resizing'],
+                body: [
+                    'A way to prove that a photo or document is the one you published and has not been altered since. You sign your images and PDFs, and a browser add-on checks the signature as you browse.',
+                    'It still recognizes a picture that was resized or re-saved along the way, which is what normally breaks this kind of check.',
+                ],
+            },
         ],
     },
     {
         title: 'The kitchen, run through Claude',
-        featured: [],
-        cards: [
-        {
-            title: 'Grocy MCP',
-            meta: 'Open source · AI assistant tooling · 2026',
-            href: 'https://github.com/anishanilkumar/grocy-mcp',
-            hrefLabel: 'github.com/anishanilkumar/grocy-mcp',
-            body: 'Connects an AI assistant to the open source software that tracks what is in your kitchen, so instead of tapping through an inventory app you just ask: what is going off this week, what can I cook with it, add coconut milk to the list. The careful part is what it refuses to do. If a product name could mean two things, it stops and asks rather than quietly moving the wrong item.',
-        },
-        {
-            title: 'Recipie',
-            meta: 'Offline-first PWA · MCP · 2026',
-            href: 'https://github.com/anishanilkumar/recipie',
-            hrefLabel: 'github.com/anishanilkumar/recipie',
-            body: 'A household recipe book that checks the pantry before you start. Each recipe gets a lid: green when everything is in, yellow when one or two minor things are missing, red when the dish cannot happen tonight. It knows coconut oil can stand in for ghee, works offline at the stove, and lets Claude read and save recipes.',
-        },
-        {
-            title: 'Foodlog',
-            meta: 'Photo-first PWA · MCP · private · 2026',
-            body: 'Logging a meal takes a photo and a few seconds. Claude works out later what was on the plate, how much, and the nutrition, reading a kitchen scale in the frame when there is one. Each half of an entry has exactly one writer, the phone or Claude, so syncing never has to merge anything.',
-        },
+        items: [
+            {
+                id: 'grocy-mcp',
+                title: 'Grocy MCP',
+                tagline: 'Ask your kitchen what is going off this week.',
+                meta: 'Open source · AI assistant tooling · 2026',
+                href: 'https://github.com/anishanilkumar/grocy-mcp',
+                hrefLabel: 'github.com/anishanilkumar/grocy-mcp',
+                body: [
+                    'Connects an AI assistant to the open source software that tracks what is in your kitchen, so instead of tapping through an inventory app you just ask: what is going off this week, what can I cook with it, add coconut milk to the list.',
+                    'The careful part is what it refuses to do. If a product name could mean two things, it stops and asks rather than quietly moving the wrong item.',
+                ],
+            },
+            {
+                id: 'recipie',
+                title: 'Recipie',
+                tagline: 'A recipe book that checks the pantry first.',
+                meta: 'Offline-first PWA · MCP · 2026',
+                href: 'https://github.com/anishanilkumar/recipie',
+                hrefLabel: 'github.com/anishanilkumar/recipie',
+                body: [
+                    'A household recipe book that checks the pantry before you start. Each recipe gets a lid: green when everything is in, yellow when one or two minor things are missing, red when the dish cannot happen tonight.',
+                    'It knows coconut oil can stand in for ghee, works offline at the stove, and lets Claude read and save recipes.',
+                ],
+            },
+            {
+                id: 'foodlog',
+                title: 'Foodlog',
+                tagline: 'Log a meal with one photo.',
+                meta: 'Photo-first PWA · MCP · private · 2026',
+                body: [
+                    'Logging a meal takes a photo and a few seconds. Claude works out later what was on the plate, how much, and the nutrition, reading a kitchen scale in the frame when there is one.',
+                    'Each half of an entry has exactly one writer, the phone or Claude, so syncing never has to merge anything.',
+                ],
+            },
         ],
     },
     {
         title: 'Self-hosted, for home and community',
-        featured: [],
-        cards: [
-        {
-            title: 'Jarvis, a home server that rebuilds itself',
-            meta: 'Home infrastructure · NixOS · 2025 to 2026',
-            href: 'https://abfahrt.anishsheela.com/',
-            hrefLabel: 'abfahrt.anishsheela.com',
-            links: [{ label: 'source', href: 'https://github.com/anishanilkumar/jarvis' }],
-            body: 'A Raspberry Pi that runs the household: media, automatic Mac backups, monitoring, remote access. The whole machine is described in one set of text files, so if the memory card dies I write a fresh one and get the identical server back. A cheap tablet on the wall shows the day from it: weather, whether you need an umbrella, tram departures, dinner, the shopping list. It answers to "hey jarvis" entirely on the Pi, with no account and nothing said in the house sent anywhere. The rule is that it never blanks and never lies: stale data looks stale. Its departures panel is public as Abfahrt: give it a Berlin address and see the trams and buses you can still catch nearby.',
-        },
-        {
-            title: 'Human Nutrition Facts',
-            meta: 'Just for fun · single page · 2026',
-            href: 'https://human-nutrition.anishsheela.com/',
-            hrefLabel: 'human-nutrition.anishsheela.com',
-            links: [{ label: 'source', href: 'https://github.com/anishanilkumar/human-nutrition' }],
-            body: 'What is the nutritional value of a human? Enter your height, weight and age and get the full German food label for your own body: energy, vitamins, minerals, a Nutri-Score and a best before date drawn from life expectancy tables. The numbers come from real body composition research, and every row says how confident the estimate is.',
-        },        {
-            title: 'Drupal Kerala community hub',
-            meta: 'Community · open books · 2026',
-            href: 'https://drupalkerala.org/',
-            hrefLabel: 'drupalkerala.org',
-            links: [{ label: 'source', href: 'https://github.com/anishanilkumar/drupalkerala' }],
-            body: 'The home of the Drupal community I co-founded in Kerala: upcoming meetups on a shared calendar, and the complete accounts for the Drupal and Wikipedia 25th anniversary celebrations in Thiruvananthapuram and Kochi, down to the scanned bills. Volunteer events run on trust, and publishing every rupee is the cheapest way to keep it.',
-        },        ],
+        items: [
+            {
+                id: 'jarvis',
+                title: 'Jarvis',
+                tagline: 'A home server that rebuilds itself from text files.',
+                meta: 'Home infrastructure · NixOS · 2025 to 2026',
+                href: 'https://abfahrt.anishsheela.com/',
+                hrefLabel: 'abfahrt.anishsheela.com',
+                links: [{ label: 'source', href: 'https://github.com/anishanilkumar/jarvis' }],
+                features: ['Raspberry Pi', 'Wall display', 'Voice, fully on device', 'Public departures page'],
+                body: [
+                    'A Raspberry Pi that runs the household: media, automatic Mac backups, monitoring, remote access. The whole machine is described in one set of text files, so if the memory card dies I write a fresh one and get the identical server back.',
+                    'A cheap tablet on the wall shows the day from it: weather, whether you need an umbrella, tram departures, dinner, the shopping list. It answers to "hey jarvis" entirely on the Pi, with no account and nothing said in the house sent anywhere.',
+                    'The rule is that it never blanks and never lies: stale data looks stale. Its departures panel is public as Abfahrt: give it a Berlin address and see the trams and buses you can still catch nearby.',
+                ],
+            },
+            {
+                id: 'human-nutrition',
+                title: 'Human Nutrition Facts',
+                tagline: 'The German food label for your own body.',
+                meta: 'Just for fun · single page · 2026',
+                href: 'https://human-nutrition.anishsheela.com/',
+                hrefLabel: 'human-nutrition.anishsheela.com',
+                links: [{ label: 'source', href: 'https://github.com/anishanilkumar/human-nutrition' }],
+                body: [
+                    'What is the nutritional value of a human? Enter your height, weight and age and get the full German food label for your own body: energy, vitamins, minerals, a Nutri-Score and a best before date drawn from life expectancy tables.',
+                    'The numbers come from real body composition research, and every row says how confident the estimate is.',
+                ],
+            },
+            {
+                id: 'drupal-kerala',
+                title: 'Drupal Kerala community hub',
+                tagline: 'A community site with fully open books.',
+                meta: 'Community · open books · 2026',
+                href: 'https://drupalkerala.org/',
+                hrefLabel: 'drupalkerala.org',
+                links: [{ label: 'source', href: 'https://github.com/anishanilkumar/drupalkerala' }],
+                body: [
+                    'The home of the Drupal community I co-founded in Kerala: upcoming meetups on a shared calendar, and the complete accounts for the Drupal and Wikipedia 25th anniversary celebrations in Thiruvananthapuram and Kochi, down to the scanned bills.',
+                    'Volunteer events run on trust, and publishing every rupee is the cheapest way to keep it.',
+                ],
+            },
+        ],
     },
     {
         title: 'Smaller tools and older open source',
-        featured: [],
-        cards: [
-        {
-            title: 'Karyasthan',
-            meta: 'WhatsApp bot · Node · 2026',
-            href: 'https://github.com/anishanilkumar/wg_whatsapp',
-            hrefLabel: 'github.com/anishanilkumar/wg_whatsapp',
-            body: 'Announces the day\'s cleaning duties to our shared flat\'s WhatsApp group every morning. Deliberately notify only: no tracking, no reminders, no calling anyone out.',
-        },
-        {
-            title: 'Walk or run for the bus?',
-            meta: 'React · Singapore · 2022',
-            href: 'https://github.com/anishanilkumar/sgbusrun',
-            hrefLabel: 'github.com/anishanilkumar/sgbusrun',
-            body: 'One glance at live arrivals for the bus between home and office, colored by how full each bus is, to decide whether it was worth running.',
-        },
-        {
-            title: 'Drupal and PHP contributions',
-            meta: 'Open source · 2012 to 2026',
-            href: 'https://github.com/anishanilkumar/phpresellerclub',
-            hrefLabel: 'github.com/anishanilkumar/phpresellerclub',
-            body: 'A typed, tested PHP client for the ResellerClub domain API, plus Drupal modules: Hacked! and Block ID ported to Drupal 9, a CSV list field formatter, and a JSON page API.',
-        },
+        items: [
+            {
+                id: 'karyasthan',
+                title: 'Karyasthan',
+                tagline: 'Cleaning duties, announced to the flat every morning.',
+                meta: 'WhatsApp bot · Node · 2026',
+                href: 'https://github.com/anishanilkumar/wg_whatsapp',
+                hrefLabel: 'github.com/anishanilkumar/wg_whatsapp',
+                body: [
+                    'Announces the day\'s cleaning duties to our shared flat\'s WhatsApp group every morning. Deliberately notify only: no tracking, no reminders, no calling anyone out.',
+                ],
+            },
+            {
+                id: 'sgbusrun',
+                title: 'Walk or run for the bus?',
+                tagline: 'One glance: is it worth running?',
+                meta: 'React · Singapore · 2022',
+                href: 'https://github.com/anishanilkumar/sgbusrun',
+                hrefLabel: 'github.com/anishanilkumar/sgbusrun',
+                body: [
+                    'One glance at live arrivals for the bus between home and office, colored by how full each bus is, to decide whether it was worth running.',
+                ],
+            },
+            {
+                id: 'contributions',
+                title: 'Drupal and PHP contributions',
+                tagline: 'Open source since 2012.',
+                meta: 'Open source · 2012 to 2026',
+                href: 'https://github.com/anishanilkumar/phpresellerclub',
+                hrefLabel: 'github.com/anishanilkumar/phpresellerclub',
+                body: [
+                    'A typed, tested PHP client for the ResellerClub domain API, plus Drupal modules: Hacked! and Block ID ported to Drupal 9, a CSV list field formatter, and a JSON page API.',
+                ],
+            },
         ],
     },
 ];
@@ -249,9 +355,9 @@ const education = [
 const certifications = ['Acquia Certified Developer', 'Google AI for JavaScript Developers with TensorFlow.js'];
 
 const languages = [
-    { name: 'German', level: 'B1, Goethe-Institut certified, studying toward B2' },
-    { name: 'English', level: 'C1 (IELTS), full professional proficiency' },
-    { name: 'Malayalam', level: 'Native' },
+    { name: 'German', cefr: 3, level: 'B1, Goethe-Institut certified, studying toward B2' },
+    { name: 'English', cefr: 5, level: 'C1 (IELTS), full professional proficiency' },
+    { name: 'Malayalam', cefr: 6, level: 'Native' },
     { name: 'Tamil & Hindi', level: 'Conversational' },
 ];
 
@@ -284,7 +390,7 @@ const community = [
                 meta: 'DrupalCamp Pune, panel',
                 href: 'https://www.drupalpune.in/panel-discussion-fostering-growth-local-drupal-communities-india',
             },
-            { text: 'FOSSMeet 2025', meta: 'Speaker', href: null },
+            { text: 'Speaker', meta: 'FOSSMeet 2025', href: null },
         ],
     },
     {
@@ -332,6 +438,8 @@ const community = [
     },
 ];
 
+const [speaking, ...otherCommunity] = community;
+
 /* ------------------------------------------------------------------ */
 /* Small building blocks                                               */
 /* ------------------------------------------------------------------ */
@@ -369,93 +477,193 @@ function GroupLabel({ children, className = '' }) {
     return <h3 className={`label ${className}`}>{children}</h3>;
 }
 
-/* One card in the projects section. The title link is stretched over the
-   whole card, so the card stays one big click target while a separate source
-   link can sit on top of it (anchors cannot nest). Cards with nowhere to go
-   get no misleading affordances. */
-function ProjectCard({ p, featured: isFeatured }) {
+/* A readout: the number first, its meaning under it. */
+function Stat({ value, label, size = 'text-3xl', tone = 'text-arc' }) {
+    return (
+        <div>
+            <div className={`font-semibold leading-none tracking-[-0.02em] ${size} ${tone}`}>{value}</div>
+            <div className="mt-2 font-mono text-xs leading-snug tracking-[0.04em] text-ink-dim">{label}</div>
+        </div>
+    );
+}
+
+const allProjects = projectGroups.flatMap((g) => g.items);
+const isWide = () => window.matchMedia('(min-width: 1024px)').matches;
+
+/* The full story of one project. Hidden panels stay in the HTML (for search
+   and find-in-page) and replay the `arrive` animation each time they are
+   shown, because showing one takes it from display: none. */
+function ProjectPanel({ p, open }) {
     const linkProps = { target: '_blank', rel: 'noopener noreferrer' };
+    const onGitHub = p.href?.includes('github.com');
 
     return (
         <div
-            className={`instrument group flex flex-col p-6 sm:p-7 ${p.href ? 'hover:bg-panel-lit' : ''}`}
+            id={`project-${p.id}`}
+            role="region"
+            aria-label={p.title}
+            hidden={!open}
+            className="instrument arrive mb-3 p-6 sm:p-7 lg:sticky lg:top-24 lg:col-start-2 lg:row-start-1 lg:row-end-[-1] lg:mb-0 lg:self-start"
         >
-            <div className="flex items-start justify-between gap-4">
-                <div>
-                    <h3 className="text-xl font-semibold leading-[1.1] tracking-[-0.01em] text-ink transition-colors group-hover:text-arc">
-                        {p.href ? (
-                            <a
-                                href={p.href}
-                                {...linkProps}
-                                className="after:absolute after:inset-0 focus-visible:outline-none focus-visible:after:outline focus-visible:after:outline-2 focus-visible:after:outline-arc"
-                            >
-                                {p.title}
-                            </a>
-                        ) : (
-                            p.title
-                        )}
-                    </h3>
-                    <div className="mt-1.5 font-mono text-xs tracking-[0.08em] text-ink-dim">{p.meta}</div>
+            {/* On phones the row directly above already carries the title. */}
+            <h4 className="mb-1.5 hidden text-2xl font-semibold leading-[1.1] tracking-[-0.02em] text-ink lg:block">
+                {p.title}
+            </h4>
+            <div className="font-mono text-xs tracking-[0.08em] text-ink-dim">{p.meta}</div>
+
+            {p.image && (
+                <img
+                    src={p.image}
+                    alt={p.alt}
+                    width="1442"
+                    height="900"
+                    loading="lazy"
+                    decoding="async"
+                    className="mt-5 aspect-[16/9] w-full border-rule border-engrave bg-ground object-cover object-top"
+                />
+            )}
+
+            {p.stats && (
+                <div className="mt-6 grid grid-cols-2 gap-x-6 gap-y-6 sm:grid-cols-4">
+                    {p.stats.map((s) => (
+                        <Stat key={s.label} {...s} />
+                    ))}
                 </div>
-                {p.href && (
-                    <span
-                        aria-hidden="true"
-                        className="mt-0.5 font-mono text-lg text-ink-dim transition-colors group-hover:text-arc"
-                    >
-                        ↗
-                    </span>
-                )}
+            )}
+
+            {p.features && (
+                <div className="mt-5 flex flex-wrap gap-2">
+                    {p.features.map((f) => (
+                        <Chip key={f}>{f}</Chip>
+                    ))}
+                </div>
+            )}
+
+            <div className="mt-5 space-y-3">
+                {p.body.map((para) => (
+                    <p key={para} className="leading-relaxed text-ink-dim">
+                        {para}
+                    </p>
+                ))}
             </div>
 
-            <div className={isFeatured && p.image ? 'mt-5 grid gap-6 lg:grid-cols-2 lg:gap-8' : ''}>
-                {isFeatured && p.image && (
-                    <img
-                        src={p.image}
-                        alt={p.alt}
-                        width="1442"
-                        height="900"
-                        loading="lazy"
-                        decoding="async"
-                        className="aspect-[16/10] w-full border-rule border-engrave bg-ground object-cover object-top"
-                    />
-                )}
-                <div>
-                    <p className={`leading-relaxed text-ink-dim ${isFeatured && p.image ? '' : 'mt-4'}`}>{p.body}</p>
-                    {p.why && (
-                        <div className="mt-5 border-t-rule border-engrave pt-4">
-                            <GroupLabel>Why it matters</GroupLabel>
-                            <p className="mt-2 leading-relaxed text-ink-dim">{p.why}</p>
-                        </div>
-                    )}
+            {/* Gold is the human reason, as opposed to the arc of the numbers. */}
+            {p.why && (
+                <div className="mt-6 border-l-4 border-gold pl-4">
+                    <GroupLabel>Why it matters</GroupLabel>
+                    <p className="mt-2 leading-relaxed text-ink-dim">{p.why}</p>
                 </div>
-            </div>
+            )}
 
-            {(p.hrefLabel || p.links) && (
-                <div className="mt-auto flex flex-wrap items-baseline gap-x-5 gap-y-1 pt-5 font-mono text-[13px]">
-                    {/* Long repo URLs wrap after a slash, never mid-name. */}
-                    {p.hrefLabel && (
-                        <span className="text-arc">
-                            {p.hrefLabel.split('/').map((part, i) => (
-                                <Fragment key={i}>
-                                    {i > 0 && '/'}
-                                    {i > 0 && <wbr />}
-                                    {part}
-                                </Fragment>
-                            ))}
-                        </span>
+            {(p.href || p.links) && (
+                <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
+                    {p.href && (
+                        <a href={p.href} {...linkProps} className="btn btn-primary">
+                            {onGitHub ? 'View on GitHub' : 'Open live site'} ↗
+                        </a>
                     )}
                     {p.links?.map((l) => (
                         <a
                             key={l.href}
                             href={l.href}
                             {...linkProps}
-                            className="relative z-10 text-ink-dim underline decoration-engrave decoration-2 underline-offset-4 hover:text-arc hover:decoration-arc"
+                            className="inline-flex min-h-[44px] items-center font-mono text-[13px] text-ink-dim underline decoration-engrave decoration-2 underline-offset-4 hover:text-arc hover:decoration-arc"
                         >
                             {l.label} ↗
                         </a>
                     ))}
                 </div>
             )}
+        </div>
+    );
+}
+
+/* One DOM for both layouts. On phones it reads top to bottom as an accordion:
+   each row is followed by its panel. From `lg` up the same children sit in a
+   two-column grid: rows and group labels flow down column one, and every
+   panel is placed in column two across all the rows. The final 1fr row takes
+   up the slack when the panel is taller than the index, so the rows keep
+   their own height instead of being stretched apart. */
+function ProjectSelector() {
+    const [selected, setSelected] = useState(allProjects[0].id);
+    const rows = useRef({});
+
+    const select = (id) => {
+        if (id === selected) {
+            // A phone can close the open row; the wide layout always shows one.
+            if (!isWide()) setSelected(null);
+            return;
+        }
+        setSelected(id);
+        // Closing a panel above the tapped row pulls the row up and can take
+        // it off screen. Bring it back once the layout has settled.
+        if (!isWide()) {
+            requestAnimationFrame(() => rows.current[id]?.scrollIntoView({ block: 'nearest' }));
+        }
+    };
+
+    const onKeyDown = (e, id) => {
+        const step = { ArrowDown: 1, ArrowUp: -1 }[e.key];
+        if (!step) return;
+        e.preventDefault();
+        const i = allProjects.findIndex((p) => p.id === id);
+        const next = allProjects[(i + step + allProjects.length) % allProjects.length];
+        rows.current[next.id]?.focus();
+        if (isWide()) setSelected(next.id);
+    };
+
+    const indexRows = allProjects.length + projectGroups.length;
+
+    return (
+        <div
+            className="lg:grid lg:grid-cols-[minmax(0,21rem)_minmax(0,1fr)] lg:gap-x-8"
+            style={{ gridTemplateRows: `repeat(${indexRows}, auto) 1fr` }}
+        >
+            {projectGroups.map((g, gi) => (
+                <Fragment key={g.title}>
+                    <GroupLabel className={`pb-3 lg:col-start-1 ${gi > 0 ? 'pt-8' : ''}`}>{g.title}</GroupLabel>
+                    {g.items.map((p) => {
+                        const open = selected === p.id;
+                        return (
+                            <Fragment key={p.id}>
+                                <button
+                                    type="button"
+                                    ref={(el) => (rows.current[p.id] = el)}
+                                    aria-expanded={open}
+                                    aria-controls={`project-${p.id}`}
+                                    onClick={() => select(p.id)}
+                                    onKeyDown={(e) => onKeyDown(e, p.id)}
+                                    className={`group flex w-full scroll-mt-28 items-start gap-3 border-t-rule border-engrave px-3 py-3.5 text-left transition-colors lg:col-start-1 ${
+                                        open ? 'bg-panel-lit' : 'hover:bg-panel'
+                                    }`}
+                                >
+                                    <span
+                                        aria-hidden="true"
+                                        className={`relative mt-1.5 h-3 w-3 shrink-0 border-rule ${
+                                            open ? 'border-arc' : 'border-arc-dim'
+                                        }`}
+                                    >
+                                        {open && <span className="absolute inset-[1px] bg-arc" />}
+                                    </span>
+                                    <span className="min-w-0">
+                                        <span
+                                            className={`block text-lg font-semibold leading-tight tracking-[-0.01em] transition-colors ${
+                                                open ? 'text-arc' : 'text-ink group-hover:text-arc'
+                                            }`}
+                                        >
+                                            {p.title}
+                                        </span>
+                                        <span className="mt-1 block text-[15px] leading-snug text-ink-dim">
+                                            {p.tagline}
+                                        </span>
+                                    </span>
+                                </button>
+                                <ProjectPanel p={p} open={open} />
+                            </Fragment>
+                        );
+                    })}
+                </Fragment>
+            ))}
         </div>
     );
 }
@@ -536,6 +744,14 @@ export default function App() {
         return () => observer.disconnect();
     }, []);
 
+    // The phone nav is a strip that scrolls sideways. Keep the current section's
+    // link in view, or the highlight is off screen for the later sections.
+    const strip = useRef(null);
+    useEffect(() => {
+        const link = strip.current?.querySelector('[aria-current]');
+        if (link) strip.current.scrollTo({ left: link.offsetLeft - 24, behavior: 'smooth' });
+    }, [active]);
+
     const navLink = (n, extra = '') =>
         `font-mono text-[13px] uppercase tracking-[0.08em] transition-colors hover:text-ink ${
             active === n.id ? 'text-arc' : 'text-ink-dim'
@@ -556,7 +772,7 @@ export default function App() {
                     <a href="#about" className="font-mono text-[13px] font-medium uppercase tracking-[0.3em] text-ink">
                         Anish Anilkumar
                     </a>
-                    <nav aria-label="Sections" className="hidden gap-7 sm:flex">
+                    <nav aria-label="Sections" className="hidden gap-7 lg:flex">
                         {nav.map((n) => (
                             <a
                                 key={n.id}
@@ -569,17 +785,19 @@ export default function App() {
                         ))}
                     </nav>
                 </div>
-                {/* Phones get a scrollable strip rather than no navigation at all. */}
+                {/* Phones and tablets get a scrollable strip: seven links do not fit
+                    beside the wordmark below lg. */}
                 <nav
+                    ref={strip}
                     aria-label="Sections"
-                    className="no-scrollbar flex gap-6 overflow-x-auto border-t-rule border-engrave px-6 py-2.5 sm:hidden"
+                    className="no-scrollbar flex gap-6 overflow-x-auto border-t-rule border-engrave px-6 lg:hidden"
                 >
                     {nav.map((n) => (
                         <a
                             key={n.id}
                             href={`#${n.id}`}
                             aria-current={active === n.id ? 'true' : undefined}
-                            className={navLink(n, 'shrink-0')}
+                            className={navLink(n, 'flex min-h-[44px] shrink-0 items-center')}
                         >
                             {n.label}
                         </a>
@@ -605,10 +823,11 @@ export default function App() {
                                 className="rise mt-7 text-lg leading-relaxed text-ink-dim"
                                 style={{ animationDelay: '0.2s' }}
                             >
-                                {yearsShipping} years shipping software for Meta, Crédit Agricole CIB, Accenture, and
-                                the US National Institutes of Health. I work across the stack: deep PHP and Drupal,
-                                React and TypeScript on the frontend, and, lately, applied machine learning. Based in
-                                Berlin with a Goethe-certified B1 in German.
+                                {yearsShipping} years shipping software for <strong className="font-medium text-ink">Meta</strong>,{' '}
+                                <strong className="font-medium text-ink">Crédit Agricole CIB</strong>,{' '}
+                                <strong className="font-medium text-ink">Accenture</strong>, and the{' '}
+                                <strong className="font-medium text-ink">US National Institutes of Health</strong>.
+                                Deep PHP and Drupal, React and TypeScript, and lately applied machine learning.
                             </p>
 
                             <div
@@ -618,7 +837,7 @@ export default function App() {
                                 {/* A status readout, not a pill: the dot carries the state. */}
                                 <span className="inline-flex items-center gap-2.5 border-l-4 border-arc bg-panel py-2 pl-3 pr-4 font-mono text-[13px] uppercase tracking-[0.08em] text-ink">
                                     <span className="inline-block h-2 w-2 bg-arc" aria-hidden="true" />
-                                    Available in Berlin, work authorization ready
+                                    Available in Berlin, work authorization ready, German B1
                                 </span>
                             </div>
 
@@ -670,34 +889,22 @@ export default function App() {
                             />
                         </div>
                     </div>
+
+                    {/* The four numbers to leave with, for a visitor who reads nothing else. */}
+                    <div
+                        className="rise mt-16 grid grid-cols-2 gap-x-8 gap-y-8 border-t-rule border-engrave pt-8 sm:grid-cols-4"
+                        style={{ animationDelay: '0.42s' }}
+                    >
+                        {headlineStats.map((s) => (
+                            <Stat key={s.label} {...s} size="text-4xl sm:text-5xl" />
+                        ))}
+                    </div>
                 </section>
 
                 {/* Projects */}
                 <section id="projects" className="border-t-rule border-engrave py-20">
                     <SectionHead label="Selected work" title="Things I have built" />
-                    <div className="space-y-14">
-                        {projectGroups.map((g) => (
-                            <div key={g.title}>
-                                <GroupLabel>{g.title}</GroupLabel>
-                                <div className="mt-4 space-y-5">
-                                    {g.featured.map((p) => (
-                                        <ProjectCard key={p.title} p={p} featured />
-                                    ))}
-                                    {g.cards.length > 0 && (
-                                        <div
-                                            className={`grid gap-5 ${g.cards.length > 1 ? 'sm:grid-cols-2' : ''} ${
-                                                g.cards.length % 3 === 0 ? 'lg:grid-cols-3' : g.cards.length === 4 ? 'lg:grid-cols-4' : ''
-                                            }`}
-                                        >
-                                            {g.cards.map((p) => (
-                                                <ProjectCard key={p.title} p={p} />
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                    <ProjectSelector />
                 </section>
 
                 {/* Work */}
@@ -722,9 +929,15 @@ export default function App() {
                                         {job.current && <span className="absolute inset-[2px] bg-arc" />}
                                     </span>
                                     <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
-                                        <h3 className="text-xl font-semibold leading-[1.15] tracking-[-0.01em] text-ink">
-                                            {job.role}
-                                            {job.org && <span className="text-arc-dim"> · {job.org}</span>}
+                                        {/* The employer is what people scan for, so it leads.
+                                            A gap in the timeline is quieter than a role. */}
+                                        <h3
+                                            className={`text-xl leading-[1.15] tracking-[-0.01em] ${
+                                                job.org ? 'font-semibold text-ink' : 'font-medium text-ink-dim'
+                                            }`}
+                                        >
+                                            {job.org || job.role}
+                                            {job.org && <span className="font-normal text-ink-dim"> · {job.role}</span>}
                                         </h3>
                                         <div className="shrink-0 font-mono text-[13px] tracking-[0.04em] text-ink-dim">
                                             {job.location ? `${job.period} · ${job.location}` : job.period}
@@ -733,17 +946,37 @@ export default function App() {
                                     {job.note && (
                                         <div className="mt-0.5 font-mono text-xs tracking-[0.04em] text-ink-dim">{job.note}</div>
                                     )}
-                                    <ul className="mt-3 space-y-2">
-                                        {job.bullets.map((b, i) => (
-                                            <li key={i} className="flex gap-3 leading-relaxed text-ink-dim">
-                                                <span
-                                                    className="mt-2.5 h-1 w-1 shrink-0 bg-arc-dim"
-                                                    aria-hidden="true"
-                                                />
-                                                <span>{b}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
+                                    {job.headline && (
+                                        <p className="mt-2.5 text-[17px] leading-snug text-ink">{job.headline}</p>
+                                    )}
+                                    {job.stats && (
+                                        <div className="mt-4 flex flex-wrap gap-x-12 gap-y-4">
+                                            {job.stats.map((s) => (
+                                                <Stat key={s.label} {...s} size="text-2xl" tone="text-ink" />
+                                            ))}
+                                        </div>
+                                    )}
+                                    {/* A native disclosure: works without script, and the
+                                        text stays in the page for search and find-in-page. */}
+                                    {job.bullets.length > 0 && (
+                                        <details open={job.current} className="group mt-2">
+                                            <summary className="disclosure inline-flex min-h-[44px] cursor-pointer items-center font-mono text-[13px] uppercase tracking-[0.08em] text-arc transition-colors hover:text-ink">
+                                                <span className="group-open:hidden">+ Details</span>
+                                                <span className="hidden group-open:inline">− Hide details</span>
+                                            </summary>
+                                            <ul className="arrive space-y-2 pb-1">
+                                                {job.bullets.map((b, i) => (
+                                                    <li key={i} className="flex gap-3 leading-relaxed text-ink-dim">
+                                                        <span
+                                                            className="mt-2.5 h-1 w-1 shrink-0 bg-arc-dim"
+                                                            aria-hidden="true"
+                                                        />
+                                                        <span>{b}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </details>
+                                    )}
                                 </li>
                             ))}
                         </ol>
@@ -753,22 +986,35 @@ export default function App() {
                 {/* Stack */}
                 <section id="stack" className="border-t-rule border-engrave py-20">
                     <SectionHead label="Toolkit" title="What I work with" />
-                    <div className="grid gap-x-10 gap-y-8 sm:grid-cols-2">
+                    <p className="mb-5 font-mono text-xs tracking-[0.04em] text-ink-dim">
+                        <span className="font-medium text-ink">Bright</span> marks what I use most.
+                    </p>
+                    {/* A table, not chips: nothing here is a control, and rows
+                        read faster than a cloud of boxes. */}
+                    <dl className="border-b-rule border-engrave">
                         {stack.map((s) => (
-                            <div key={s.group}>
-                                <GroupLabel>{s.group}</GroupLabel>
-                                <div className="mt-3 flex flex-wrap gap-2">
+                            <div
+                                key={s.group}
+                                className="grid gap-x-8 gap-y-2 border-t-rule border-engrave py-4 sm:grid-cols-[11rem_1fr]"
+                            >
+                                <dt className="label sm:pt-1">{s.group}</dt>
+                                <dd className="flex flex-wrap gap-x-5 gap-y-1.5 text-[17px]">
                                     {s.items.map((it) => (
-                                        <Chip key={it}>{it}</Chip>
+                                        <span
+                                            key={it}
+                                            className={coreStack.includes(it) ? 'font-semibold text-ink' : 'text-ink-dim'}
+                                        >
+                                            {it}
+                                        </span>
                                     ))}
-                                </div>
+                                </dd>
                             </div>
                         ))}
-                    </div>
+                    </dl>
                 </section>
 
                 {/* Education + Certs + Languages */}
-                <section id="background" className="border-t-rule border-engrave py-20">
+                <section id="education" className="border-t-rule border-engrave py-20">
                     <SectionHead label="Background" title="Education & languages" />
                     <div className="grid gap-x-10 gap-y-12 lg:grid-cols-3">
                         <div className="lg:col-span-2">
@@ -780,7 +1026,7 @@ export default function App() {
                                             <h4 className="text-lg font-semibold text-ink">{e.degree}</h4>
                                             <span className="shrink-0 font-mono text-[13px] text-ink-dim">{e.period}</span>
                                         </div>
-                                        <div className="text-arc-dim">{e.school}</div>
+                                        <div className="text-ink-dim">{e.school}</div>
                                         {e.note && <p className="mt-1 text-[15px] leading-relaxed text-ink-dim">{e.note}</p>}
                                         {e.href && (
                                             <a
@@ -809,7 +1055,20 @@ export default function App() {
                             <dl className="mt-4 space-y-4">
                                 {languages.map((l) => (
                                     <div key={l.name}>
-                                        <dt className="font-semibold text-ink">{l.name}</dt>
+                                        <dt className="flex items-center justify-between gap-4 font-semibold text-ink">
+                                            {l.name}
+                                            {/* CEFR as six index ticks, A1 to C2, lit up to the level. */}
+                                            {l.cefr && (
+                                                <span className="flex gap-1" aria-hidden="true">
+                                                    {[1, 2, 3, 4, 5, 6].map((n) => (
+                                                        <span
+                                                            key={n}
+                                                            className={`h-3 w-2 ${n <= l.cefr ? 'bg-arc' : 'bg-engrave'}`}
+                                                        />
+                                                    ))}
+                                                </span>
+                                            )}
+                                        </dt>
                                         <dd className="text-[15px] leading-relaxed text-ink-dim">{l.level}</dd>
                                     </div>
                                 ))}
@@ -821,40 +1080,88 @@ export default function App() {
                 {/* Community */}
                 <section id="community" className="border-t-rule border-engrave py-20">
                     <SectionHead label="Off the clock" title="Community & open source" />
-                    <div className="grid gap-x-10 gap-y-10 lg:grid-cols-3">
-                        {community.map((c) => (
-                            <div key={c.group}>
-                                <GroupLabel>{c.group}</GroupLabel>
-                                <ul className="mt-4 space-y-4">
-                                    {c.items.map((it) => (
-                                        <li key={it.text}>
-                                            {it.href ? (
-                                                <a
-                                                    href={it.href}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="group block"
-                                                >
-                                                    <span className="leading-relaxed text-ink-dim transition-colors group-hover:text-ink">
-                                                        {it.text}
-                                                    </span>
-                                                    <span className="mt-0.5 block font-mono text-xs text-arc transition-colors">
-                                                        {it.meta} ↗
-                                                    </span>
-                                                </a>
-                                            ) : (
-                                                <div>
-                                                    <span className="leading-relaxed text-ink-dim">{it.text}</span>
-                                                    <span className="mt-0.5 block font-mono text-xs text-ink-dim">
+                    <div className="grid gap-x-12 gap-y-10 lg:grid-cols-[1.35fr_1fr]">
+                        {/* Speaking is the part worth a glance, so it gets rows with
+                            the event leading: a conference name is recognized
+                            faster than a talk title is read. */}
+                        <div>
+                            <GroupLabel>
+                                {speaking.group} · {speaking.items.length}
+                            </GroupLabel>
+                            <ul className="mt-4 border-b-rule border-engrave">
+                                {speaking.items.map((it) => {
+                                    const Row = it.href ? 'a' : 'div';
+                                    const link = it.href
+                                        ? { href: it.href, target: '_blank', rel: 'noopener noreferrer' }
+                                        : {};
+                                    return (
+                                        <li key={it.meta + it.text} className="border-t-rule border-engrave">
+                                            <Row
+                                                {...link}
+                                                className="group flex min-h-[64px] items-start justify-between gap-4 py-3.5"
+                                            >
+                                                <span>
+                                                    <span
+                                                        className={`block font-semibold leading-snug text-ink transition-colors ${
+                                                            it.href ? 'group-hover:text-arc' : ''
+                                                        }`}
+                                                    >
                                                         {it.meta}
                                                     </span>
-                                                </div>
-                                            )}
+                                                    <span className="mt-0.5 block text-[15px] leading-snug text-ink-dim">
+                                                        {it.text}
+                                                    </span>
+                                                </span>
+                                                {it.href && (
+                                                    <span
+                                                        aria-hidden="true"
+                                                        className="font-mono text-ink-dim transition-colors group-hover:text-arc"
+                                                    >
+                                                        ↗
+                                                    </span>
+                                                )}
+                                            </Row>
                                         </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        ))}
+                                    );
+                                })}
+                            </ul>
+                        </div>
+
+                        <div className="space-y-10">
+                            {otherCommunity.map((c) => (
+                                <div key={c.group}>
+                                    <GroupLabel>{c.group}</GroupLabel>
+                                    <ul className="mt-4 space-y-4">
+                                        {c.items.map((it) => (
+                                            <li key={it.text}>
+                                                {it.href ? (
+                                                    <a
+                                                        href={it.href}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="group block"
+                                                    >
+                                                        <span className="leading-relaxed text-ink transition-colors group-hover:text-arc">
+                                                            {it.text}
+                                                        </span>
+                                                        <span className="mt-0.5 block font-mono text-xs text-arc transition-colors">
+                                                            {it.meta} ↗
+                                                        </span>
+                                                    </a>
+                                                ) : (
+                                                    <div>
+                                                        <span className="leading-relaxed text-ink">{it.text}</span>
+                                                        <span className="mt-0.5 block font-mono text-xs text-ink-dim">
+                                                            {it.meta}
+                                                        </span>
+                                                    </div>
+                                                )}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </section>
 
@@ -874,6 +1181,9 @@ export default function App() {
                                     className="btn btn-primary"
                                 >
                                     Email me
+                                </a>
+                                <a href="/Anish_Anilkumar_CV.pdf" download className="btn">
+                                    Download CV
                                 </a>
                                 <a
                                     href="https://www.linkedin.com/in/anishanil/"

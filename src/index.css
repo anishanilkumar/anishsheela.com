@@ -161,6 +161,33 @@
   }
 }
 
+/* Content arriving because the visitor asked for it: a project panel being
+   selected, a role's details being opened. Shorter than the hero entrance,
+   since it answers a click. It replays whenever the element goes from
+   display: none to shown, which is exactly when it should. */
+@keyframes arrive {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.arrive {
+  animation: arrive 260ms var(--ease);
+}
+
+/* The "+ Details" summary carries its own sign, so drop the browser's
+   triangle. */
+.disclosure {
+  list-style: none;
+}
+.disclosure::-webkit-details-marker {
+  display: none;
+}
+
 /* Hero entrance: content arriving, once, on load. Nothing moves after. */
 @keyframes rise {
   from {
