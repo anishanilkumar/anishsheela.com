@@ -507,17 +507,14 @@ const [speaking, ...otherCommunity] = community;
 const canteen = {
     title: 'The Migrant Canteen',
     label: 'Volunteering · Berlin',
-    // The file itself is blurred, not the element, so the faces cannot be
-    // recovered from the page. Replace it with the sharp crop once everyone
-    // in the photo has agreed, and put the first alt text back:
-    // 'A dozen people around a long table with pots of food, smiling at the camera.'
+    // Used with the consent of the people in it.
     image: '/community/canteen.jpg',
-    alt: 'A blurred photo of a group sharing a meal around a long table.',
+    alt: 'A dozen people around a long table with pots of food, smiling at the camera.',
     lead: 'A free monthly event in Berlin for migrant workers and students: counselling on CVs, job search and immigration law, and a warm meal for everyone who comes.',
-    body: 'I run the kitchen: I decide the menu, do the shopping and cook. I am also on the team building its website. It is an independent community.',
+    body: 'It is run by a group of volunteers. I lead the cooking and prep: I decide the menu, organise the shopping, and together we cook a warm meal for around 60 people. I joined in April 2026, helping with the prep. I am also on the team building its website.',
     stats: [
-        { value: '60', label: 'people cooked for, each time' },
-        { value: '03/2026', label: 'in the kitchen since' },
+        { value: '~60', label: 'people fed at each event' },
+        { value: '04/2026', label: 'volunteering since' },
     ],
     href: 'https://www.instagram.com/gerechtearbeit/',
     hrefLabel: 'Instagram',
