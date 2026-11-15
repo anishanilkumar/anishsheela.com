@@ -488,17 +488,13 @@ const community = [
                 meta: 'drupalkerala.org',
                 href: 'https://drupalkerala.org/',
             },
-            {
-                text: 'Responsible for the cooking at The Migrant Canteen.',
-                meta: 'The Migrant Canteen',
-            },
         ],
     },
     {
-        group: 'Baking',
+        group: 'In the kitchen',
         items: [
             {
-                text: 'Amateur baker.',
+                text: 'I bake cakes and breads in my free time, and experiment with dishes from other cuisines at home.',
                 meta: 'off the clock',
             },
         ],
@@ -506,6 +502,26 @@ const community = [
 ];
 
 const [speaking, ...otherCommunity] = community;
+
+/* The one community entry with a face: it leads the section, with a photo. */
+const canteen = {
+    title: 'The Migrant Canteen',
+    label: 'Volunteering · Berlin',
+    // The file itself is blurred, not the element, so the faces cannot be
+    // recovered from the page. Replace it with the sharp crop once everyone
+    // in the photo has agreed, and put the first alt text back:
+    // 'A dozen people around a long table with pots of food, smiling at the camera.'
+    image: '/community/canteen.jpg',
+    alt: 'A blurred photo of a group sharing a meal around a long table.',
+    lead: 'A free monthly event in Berlin for migrant workers and students: counselling on CVs, job search and immigration law, and a warm meal for everyone who comes.',
+    body: 'I run the kitchen: I decide the menu, do the shopping and cook. I am also on the team building its website. It is an independent community.',
+    stats: [
+        { value: '60', label: 'people cooked for, each time' },
+        { value: '03/2026', label: 'in the kitchen since' },
+    ],
+    href: 'https://www.instagram.com/gerechtearbeit/',
+    hrefLabel: 'Instagram',
+};
 
 /* ------------------------------------------------------------------ */
 /* Small building blocks                                               */
@@ -1148,6 +1164,40 @@ export default function App() {
                 {/* Community */}
                 <section id="community" className="border-t-rule border-engrave py-20">
                     <SectionHead label="Off the clock" title="Community & open source" />
+                    <div className="instrument mb-12 grid gap-x-8 gap-y-6 p-6 sm:p-7 lg:grid-cols-2">
+                        <img
+                            src={canteen.image}
+                            alt={canteen.alt}
+                            width="964"
+                            height="642"
+                            loading="lazy"
+                            decoding="async"
+                            className="aspect-[3/2] w-full border-rule border-engrave bg-ground object-cover"
+                        />
+                        <div>
+                            <GroupLabel>{canteen.label}</GroupLabel>
+                            <h3 className="mt-2 text-2xl font-semibold leading-[1.1] tracking-[-0.02em] text-ink">
+                                {canteen.title}
+                            </h3>
+                            <p className="mt-3 text-[17px] leading-snug text-ink">{canteen.lead}</p>
+                            {/* Gold, not arc: these count people, not software. */}
+                            <div className="mt-5 flex flex-wrap gap-x-12 gap-y-4">
+                                {canteen.stats.map((s) => (
+                                    <Stat key={s.label} {...s} tone="text-gold" />
+                                ))}
+                            </div>
+                            <p className="mt-5 leading-relaxed text-ink-dim">{canteen.body}</p>
+                            <a
+                                href={canteen.href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="mt-2 inline-flex min-h-[44px] items-center font-mono text-[13px] text-ink-dim underline decoration-engrave decoration-2 underline-offset-4 hover:text-arc hover:decoration-arc"
+                            >
+                                {canteen.hrefLabel} ↗
+                            </a>
+                        </div>
+                    </div>
+
                     <div className="grid gap-x-12 gap-y-10 lg:grid-cols-[1.35fr_1fr]">
                         {/* Speaking is the part worth a glance, so it gets rows with
                             the event leading: a conference name is recognized
